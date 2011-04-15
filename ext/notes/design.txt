@@ -1,0 +1,35 @@
+﻿Note: coordinates are relative to image (actually, the image container)
+
+Two tables
+
+notes: contain actual note data
+	-id: note id
+	-text: note text
+	-user: id of user
+	-date: date when note was added
+	-group: group id of note (if not is changed it will have same id)
+	-x:
+	-y: coordinates of the note
+	-w:
+	-h: dimensions of the note
+	
+image_notes:
+	-image_id: id of image
+	-note_id: id of the note GROUP
+	
+AJAX events
+
+/note_add/image_id
+	-image_id: id of image to initialize this note to
+	-returns the id of the note that was added
+
+/note_change/id/x/y/w/h/text
+	-id: id of old note
+	-x:
+	-y: coordinates of the note
+	-w:
+	-h: dimensions of the note
+	-text: note text
+	
+/note_remove/id
+	-id: id of note to replace

@@ -1,0 +1,56 @@
+/* styles for the photo notes */
+#Imagemain
+{
+	position: relative;
+}
+.fn-area-inner
+{
+	opacity: 0.5;
+}
+
+/* styles for advanced view */
+.note_div span
+{
+	width: 40px;
+}
+.note_div input
+{
+	width: 36px;
+}
+.note_div > input, .note_div span
+{
+	display: inline-block;
+	margin-right: 10px;
+}
+*[name="text"]
+{
+	width: 300px !important;
+}
+input[name="text"]
+{
+	width: 296px !important;
+}
+*[name="date"]
+{
+	width: 155px !important;
+}
+input[name="date"]
+{
+	width: 151px !important;
+}
+*[name="group"]
+{
+	width: 100px !important;
+}
+input[name="group"]
+{
+	width: 96px !important;
+}
+*[name="pos"], *[name="dim"]
+{
+	width: 150px !important;
+}
+input[name="change"]
+{
+	width: 150px !important;
+}
