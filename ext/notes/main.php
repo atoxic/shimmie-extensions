@@ -188,7 +188,7 @@ class Notes extends SimpleExtension
 			$page->set_mode("data");
 			if($event->count_args() == 1)
 			{
-				$id = $this->addNote("", $user->id, 30, 30, 30, 30, $event->get_arg(0));
+				$id = $this->addNote("new note", $user->id, 30, 30, 30, 30, $event->get_arg(0));
 				$page->set_data($id);
 			}
 			else
@@ -202,14 +202,15 @@ class Notes extends SimpleExtension
 				$text = $event->get_arg(5);
 				for($i = 6; $i < $event->count_args(); $i++)
 					$text .= "/" . $event->get_arg($i);
-				$this->changeNote($text, $user->id, $event->get_arg(1), $event->get_arg(2), $event->get_arg(3), $event->get_arg(4), $event->get_arg(0));
-				$page->set_data(1);
+				$id = $this->changeNote($text, $user->id, $event->get_arg(1), $event->get_arg(2), $event->get_arg(3), $event->get_arg(4), $event->get_arg(0));
+				$page->set_data($id);
 			}
 			else
 				$page->set_data(-1);
 		}
 		else if($event->page_matches("note_remove"))
 		{
+			$page->set_mode("data");
 			if($event->count_args() == 1)
 			{
 				$this->removeNote($event->get_arg(0));

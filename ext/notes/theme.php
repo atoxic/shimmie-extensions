@@ -42,8 +42,7 @@ function add_note_init()
 {
 	callback = function(response)
 	{
-		//alert("Response: " + response);
-		add_note(response, "", 30, 30, 30, 30);
+		add_note(response, "new note", 30, 30, 30, 30);
 	};
 	
 	ajaxRequest("?q=/note_add/$image_id", callback);
