@@ -26,8 +26,6 @@ class NotesTest extends ShimmieWebTestCase
 		$this->get_page("post/view/$image_id");
 		$this->assert_text("new note");
 		
-		echo "[REQUEST]note_change/$note_id/30/30/30/30/testing///[REQUEST]";
-		
 		// Changing through page request/event
 		$new_note_id = $this->get_page("note_change/$note_id/30/30/30/30/testing///");
 		$this->get_page("post/view/$image_id");
