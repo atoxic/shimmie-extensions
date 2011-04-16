@@ -132,8 +132,10 @@ HTML;
 HTML;
 			}
 			
+			$text = htmlentities($note["text"]);
+			
 			$string .= <<<HTML
-<textarea type="text" id="note$note[id]_text" name="text" />$note[text]</textarea>
+<textarea type="text" id="note$note[id]_text" name="text">$text</textarea>
 <input type="text" name="user" value="$note[user]" />
 <input type="text" name="date" value="$note[date]" />
 HTML;
