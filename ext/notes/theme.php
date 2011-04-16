@@ -64,8 +64,8 @@ JS;
 		
 		foreach($notes as $note)
 		{
-			$text = html_escape($note["text"]);
-			$string .= "add_note($note[id], \"$text\", $note[x], $note[y], $note[w], $note[h]);\n";
+			$text = json_encode($note["text"]);
+			$string .= "add_note($note[id], $text, $note[x], $note[y], $note[w], $note[h]);\n";
 		}
 		
 		$string .= <<<JS
@@ -161,7 +161,7 @@ X
 	<input type="text" id="note$note[id]_h" name="h" value="$note[h]" />
 </span>
 
-<input type="button" value="Change/Revert" name="change" onClick="javascript:change_note($note[id],
+<input type="button" value="Save" name="save" onClick="javascript:change_note($note[id],
 																document.getElementById('note$note[id]_text').value,
 																document.getElementById('note$note[id]_x').value,
 																document.getElementById('note$note[id]_y').value,

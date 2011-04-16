@@ -50,7 +50,7 @@ input[name="group"]
 {
 	width: 150px !important;
 }
-input[name="change"]
+input[name="save"]
 {
-	width: 150px !important;
+	width: 50px !important;
 }
