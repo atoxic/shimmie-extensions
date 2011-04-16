@@ -3,17 +3,17 @@
 {
 	position: relative;
 }
-.fn-note
-{
-	max-width: 1000px;
-}
 .fn-area-inner
 {
 	opacity: 0.5;
 }
+.fn-note textarea
+{
+	height: 100px;
+}
 .fn-note-text
 {
-	white-space: pre-wrap;
+	font-size: 10pt;
 }
 
 /* styles for advanced view */
