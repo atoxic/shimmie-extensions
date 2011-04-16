@@ -13,11 +13,11 @@
 {
 	width: 40px;
 }
-.note_div input
+.note_div input, .note_div input
 {
 	width: 36px;
 }
-.note_div > input, .note_div span
+.note_div > input, .note_div > textarea, .note_div span
 {
 	display: inline-block;
 	margin-right: 10px;
@@ -26,8 +26,9 @@
 {
 	width: 300px !important;
 }
-input[name="text"]
+textarea[name="text"]
 {
+	font-size: 14px;
 	width: 296px !important;
 }
 *[name="date"]

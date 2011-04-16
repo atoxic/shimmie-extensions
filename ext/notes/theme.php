@@ -96,24 +96,23 @@ HTML;
 		if($user->is_admin())
 		{
 			$string .= <<<HTML
-	<span name="id">ID</span>
+<span name="id">ID</span>
 HTML;
 		}
 		$string .= <<<HTML
-		
-	<span name="text">Text</span>
-	<span name="user">User</span>
-	<span name="date">Date</span>
+<span name="text">Text</span>
+<span name="user">User</span>
+<span name="date">Date</span>
 HTML;
 		if($user->is_admin())
 		{
 			$string .= <<<HTML
-	<span name="group">Group</span>
+<span name="group">Group</span>
 HTML;
 		}
 		$string .= <<<HTML
-	<span name="pos">Position</span>
-	<span name="dim">Dimensions</span>
+<span name="pos">Position</span>
+<span name="dim">Dimensions</span>
 
 </div>
 <br/>
@@ -134,7 +133,7 @@ HTML;
 			}
 			
 			$string .= <<<HTML
-<input type="text" id="note$note[id]_text" name="text" value="$note[text]" />
+<textarea type="text" id="note$note[id]_text" name="text" />$note[text]</textarea>
 <input type="text" name="user" value="$note[user]" />
 <input type="text" name="date" value="$note[date]" />
 HTML;
