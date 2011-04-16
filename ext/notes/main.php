@@ -1,8 +1,8 @@
 <?php
 /**
  * Name: Notes
- * Author:
- * Link: http://code.shishnet.org/shimmie2/
+ * Author: /a/non <anonymousscanlations@gmail.com>
+ * Link: https://github.com/atoxic/shimmie-extensions
  * License: BSD
  * Description: Basic photo notes
  * Documentation:

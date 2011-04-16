@@ -3,9 +3,17 @@
 {
 	position: relative;
 }
+.fn-note
+{
+	max-width: 1000px;
+}
 .fn-area-inner
 {
 	opacity: 0.5;
+}
+.fn-note-text
+{
+	white-space: pre-wrap;
 }
 
 /* styles for advanced view */
