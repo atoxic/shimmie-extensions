@@ -186,7 +186,7 @@ class Notes extends SimpleExtension
 		else if($event->page_matches("note_add"))
 		{
 			$page->set_mode("data");
-			if($event->count_args() == 1)
+			if($event->count_args() == 1 && !$user->is_anonymous())
 			{
 				$id = $this->addNote("new note", $user->id, 30, 30, 30, 30, $event->get_arg(0));
 				$page->set_data($id);
@@ -197,7 +197,7 @@ class Notes extends SimpleExtension
 		else if($event->page_matches("note_change"))
 		{
 			$page->set_mode("data");
-			if($event->count_args() >= 6)
+			if($event->count_args() >= 6 && !$user->is_anonymous())
 			{
 				$text = $event->get_arg(5);
 				for($i = 6; $i < $event->count_args(); $i++)
@@ -211,7 +211,7 @@ class Notes extends SimpleExtension
 		else if($event->page_matches("note_remove"))
 		{
 			$page->set_mode("data");
-			if($event->count_args() == 1)
+			if($event->count_args() == 1 && !$user->is_anonymous())
 			{
 				$this->removeNote($event->get_arg(0));
 				$page->set_data(1);
