@@ -159,6 +159,16 @@ class Notes extends SimpleExtension
 	}
 	/*
 		Handles page gets
+		
+		Anonymous users cannot:
+			-add new note
+			-change note
+			
+		Only admins can:
+			-remove note
+		
+		Anyone can:
+			-look at note history
 	 */
 	public function onPageRequest(PageRequestEvent $event)
 	{

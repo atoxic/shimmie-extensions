@@ -14,7 +14,9 @@ class NotesTheme extends Themelet
 		$page->add_block(new Block("Notes", $this->generateCommon($page, $user, $notes, $image_id). 
 										$this->generateNotes($page, $user, $notes, $image_id) .
 										$this->generateAdvanced($page, $user, $notes, $image_id), "main", 20));
-		$page->add_block(new Block("Note Controls", $this->generateControls($page, $user, $notes, $image_id), "left"));
+		if(!$user->is_anonymous())
+			$page->add_block(new Block("Note Controls",
+							$this->generateControls($page, $user, $notes, $image_id), "left"));
 	}
 	
 	private function userPermission(User $user)
@@ -62,7 +64,9 @@ function add_note_init()
 JS;
 		return($string);
 	}
-	
+	/*
+		Controls on the side
+	 */
 	public function generateControls(Page $page, User $user, $notes, $image_id)
 	{
 		$string = <<<JS

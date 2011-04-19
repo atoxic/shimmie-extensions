@@ -10,6 +10,13 @@
 .fn-note textarea
 {
 	height: 100px;
+	min-width: 295px;
+	max-width: 295px;
+}
+.fn-note-edit
+{
+	min-width: 307px;
+	max-width: 307px;
 }
 .fn-note-text
 {
