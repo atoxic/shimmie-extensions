@@ -13,7 +13,8 @@
 class Notes extends SimpleExtension
 {
 	/*
-		Rudimentary way for setting dev and release DB names
+		$name is the name of the main DB
+		$link_name is the name of the DB associating images and notes
 	 */
 	var $name = "notes";
 	var $link_name = "image_notes";
@@ -153,7 +154,7 @@ class Notes extends SimpleExtension
 					image_id INTEGER NOT NULL,
 					note_id INTEGER NOT NULL
 					");
-			log_info($this->name, "Installed tables for " . $this->name . " extension.");
+			log_info($this->name, "Installed tables for the Notes extension at " . $name . ".");
 			$config->set_int($this->name. "_version", 1);
 		}
 	}
