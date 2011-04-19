@@ -11,9 +11,19 @@ class NotesTheme extends Themelet
 	}
 	public function displayNotes(Page $page, User $user, $notes, $image_id)
 	{
-		$page->add_block(new Block("Notes", $this->generateCommon($page, $user, $notes, $image_id) . 
-											$this->generateNotes($page, $user, $notes, $image_id) . 
-											$this->generateAdvanced($page, $user, $notes, $image_id)));
+		$page->add_block(new Block("Notes", $this->generateCommon($page, $user, $notes, $image_id). 
+										$this->generateNotes($page, $user, $notes, $image_id) .
+										$this->generateAdvanced($page, $user, $notes, $image_id), "main", 20));
+		$page->add_block(new Block("Note Controls", $this->generateControls($page, $user, $notes, $image_id), "left"));
+	}
+	
+	private function userPermission(User $user)
+	{
+		if($user->is_admin())
+			return(2);
+		if($user->is_anonymous())
+			return(0);
+		return(1);
 	}
 	
 	/*
@@ -21,6 +31,7 @@ class NotesTheme extends Themelet
 	*/
 	public function generateCommon(Page $page, User $user, $notes, $image_id)
 	{
+		$permission = $this->userPermission($user);
 		$data_href = get_base_href();
 		
 		$string = <<<JS
@@ -41,7 +52,7 @@ function add_note_init()
 {
 	callback = function(response)
 	{
-		add_note(response, "new note", 30, 30, 30, 30);
+		add_note(response, "new note", 30, 30, 30, 30, $permission);
 	};
 	
 	ajaxRequest("?q=/note_add/$image_id", callback);
@@ -51,11 +62,26 @@ function add_note_init()
 JS;
 		return($string);
 	}
+	
+	public function generateControls(Page $page, User $user, $notes, $image_id)
+	{
+		$string = <<<JS
+		
+<form>
+<input type="button" value="New Note" name="button1" onClick="javascript:add_note_init();">
+</form> 
+
+JS;
+		return($string);
+	}
+	
 	/*
 		Normal view with photo notes
 	 */
 	public function generateNotes(Page $page, User $user, $notes, $image_id)
 	{
+		$permission = $this->userPermission($user);
+	
 		$string = <<<JS
 <script type="text/javascript">
 
@@ -64,18 +90,12 @@ JS;
 		foreach($notes as $note)
 		{
 			$text = json_encode($note["text"]);
-			$string .= "add_note($note[id], $text, $note[x], $note[y], $note[w], $note[h]);\n";
+			$string .= "add_note($note[id], $text, $note[x], $note[y], $note[w], $note[h], $permission);\n";
 		}
 		
 		$string .= <<<JS
 
 </script>
-
-<form>
-<input type="button" value="New Note" name="button1" onClick="javascript:add_note_init();">
-</form> 
-
-<br/>
 
 JS;
 		

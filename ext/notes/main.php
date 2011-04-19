@@ -211,7 +211,7 @@ class Notes extends SimpleExtension
 		else if($event->page_matches("note_remove"))
 		{
 			$page->set_mode("data");
-			if($event->count_args() == 1 && !$user->is_anonymous())
+			if($event->count_args() == 1 && $user->is_admin())
 			{
 				$this->removeNote($event->get_arg(0));
 				$page->set_data(1);
