@@ -11,9 +11,8 @@ class NotesTheme extends Themelet
 	}
 	public function displayNotes(Page $page, User $user, $notes, $image_id)
 	{
-		$page->add_block(new Block("Notes", $this->generateCommon($page, $user, $notes, $image_id). 
-										$this->generateNotes($page, $user, $notes, $image_id) .
-										$this->generateAdvanced($page, $user, $notes, $image_id), "main", 20));
+		$page->add_block(new Block("Notes (Javascript)", $this->generateCommon($page, $user, $notes, $image_id). 
+										$this->generateNotes($page, $user, $notes, $image_id), "main"));
 		if(!$user->is_anonymous())
 			$page->add_block(new Block("Note Controls",
 							$this->generateControls($page, $user, $notes, $image_id), "left"));
