@@ -11,11 +11,11 @@ class NotesTheme extends Themelet
 	}
 	public function displayNotes(Page $page, User $user, $notes, $image_id)
 	{
-		$page->add_block(new Block("Notes (Javascript)", $this->generateCommon($page, $user, $notes, $image_id). 
-										$this->generateNotes($page, $user, $notes, $image_id), "main"));
+		$main_block = $this->generateCommon($page, $user, $notes, $image_id). 
+						$this->generateNotes($page, $user, $notes, $image_id);
 		if(!$user->is_anonymous())
-			$page->add_block(new Block("Note Controls",
-							$this->generateControls($page, $user, $notes, $image_id), "left"));
+			$main_block .= $this->generateFloatingControls();
+		$page->add_block(new Block("Notes", $main_block, "main"));
 	}
 	
 	private function userPermission(User $user)
@@ -66,13 +66,27 @@ JS;
 	/*
 		Controls on the side
 	 */
-	public function generateControls(Page $page, User $user, $notes, $image_id)
+	public function generateControls()
 	{
 		$string = <<<JS
 		
 <form>
 <input type="button" value="New Note" name="button1" onClick="javascript:add_note_init();">
 </form> 
+
+JS;
+		return($string);
+	}
+	/*
+		Controls floating on the bottom left
+	 */
+	public function generateFloatingControls()
+	{
+		$string = <<<JS
+<div style="position: fixed; left: 0px; bottom: 0px; padding: 10px; border: 1px solid; background: white;">
+JS
+. $this->generateControls() . <<<JS
+</div> 
 
 JS;
 		return($string);
