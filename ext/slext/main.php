@@ -85,6 +85,26 @@ class SLExt extends SimpleExtension
 				$this->theme->displayVersions($page, $user, $str);
 			}
 		}
+		else if($event->page_matches("stage_change"))
+		{
+			if($event->count_args() == 2 && array_key_exists($event->get_arg(1), SLExtTheme::$stages_html))
+			{
+				$image = Image::by_id($event->get_arg(0));
+				$tags = $image->get_tag_array();
+				$new_tags = array($event->get_arg(1));
+				foreach($tags as $tag)
+				{
+					if(!preg_match("/stage_.+/", $tag))
+					{
+						$new_tags[] = $tag;
+					}
+				}
+				$image->set_tags($new_tags);
+				
+				$page->set_mode("redirect");
+				$page->set_redirect("?q=/post/view/" . $event->get_arg(0));
+			}
+		}
 	}
 }
 ?>
