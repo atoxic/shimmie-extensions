@@ -40,7 +40,6 @@ class Notes extends SimpleExtension
 	{
 		global $database;
 		$result = $database->get_row("SELECT add_note(?, ?, ?, ?, ?, ?, ?) AS noteID", array($text,$user, $x, $y, $w, $h, $image_id));
-		
 		return($result["noteID"]);
 	}
 	/*
@@ -57,14 +56,8 @@ class Notes extends SimpleExtension
 							$old_note_id)
 	{
 		global $database;
-		$old_note = $database->get_row("SELECT * FROM " . $this->name . " WHERE id=?", array($old_note_id));
-		$database->Execute("INSERT INTO " . $this->name .
-							" 		(text, 	user, 	date, 	note_group, 				x,	y,	w,	h) " .
-							"VALUES	(?, 	?, 		now(), 	?, 							?,	?,	?,	?)",
-							array	($text,	$user, 			$old_note["note_group"],	$x,	$y,	$w,	$h));
-		$result = $database->get_row("SELECT LAST_INSERT_ID() AS noteID");
-		$new_note_id = $result["noteID"];
-		return($new_note_id);
+		$result = $database->get_row("SELECT change_note(?, ?, ?, ?, ?, ?, ?) AS noteID", array($text,$user, $x, $y, $w, $h, $old_note_id));
+		return($result["noteID"]);
 	}
 	
 	/*
@@ -131,6 +124,31 @@ class Notes extends SimpleExtension
 		if($version < 1)
 		{
 			global $database, $config;
+			$name = $this->name;
+			$link_name = $this->link_name;
+			
+			$database->execute("DROP FUNCTION IF EXISTS change_note");
+			$statement = $database->db->prepare("CREATE FUNCTION change_note(text text, user int(11), x int(11), y int(11), w int(11), h int(11), old_note_id int(11))
+												RETURNS INT
+												BEGIN
+												SELECT note_group FROM $name WHERE id=old_note_id INTO @group;
+												INSERT INTO $name (text, user, date, note_group, x, y, w, h) VALUES (text, user, now(), @group, x, y, w, h);
+												RETURN LAST_INSERT_ID();
+												END");
+			$database->db->query($statement);
+			
+			$database->execute("DROP FUNCTION IF EXISTS add_note");
+			$statement = $database->db->prepare("CREATE FUNCTION add_note(text text, user int(11), x int(11), y int(11), w int(11), h int(11), image_id int(11))
+												RETURNS INT
+												BEGIN
+												INSERT INTO $name (text, user, date, note_group, x, y, w, h) VALUES (text, user, now(), 0, x, y, w, h);
+												SELECT LAST_INSERT_ID() into @id;
+												UPDATE $name SET note_group=@id WHERE id=@id;
+												INSERT INTO $link_name (image_id, note_id) VALUES (image_id, @id);
+												RETURN @id;
+												END");
+			$database->db->query($statement);
+			
 			$database->create_table($this->name, "
 					id SCORE_AIPK,
 					text TEXT NOT NULL,
@@ -142,21 +160,10 @@ class Notes extends SimpleExtension
 					w INTEGER NOT NULL DEFAULT 10,
 					h INTEGER NOT NULL DEFAULT 10
 					");
-			$database->create_table($this->link_name,"
+			$database->create_table($this->link_name, "
 					image_id INTEGER NOT NULL,
 					note_id INTEGER NOT NULL
 					");
-			$database->execute("DELIMITER //
-								CREATE FUNCTION add_note(text text, user int(11), x int(11), y int(11), w int(11), h int(11), image_id int(11))
-								RETURNS INT
-								BEGIN
-								INSERT INTO notes (text, user, date, note_group, x, y, w, h) VALUES (text, user, now(), 0, x, y, w, h);
-								SELECT LAST_INSERT_ID() into @id;
-								UPDATE notes SET note_group=@id WHERE id=@id;
-								INSERT INTO image_notes (image_id, note_id) VALUES (image_id, @id);
-								RETURN @id;
-								END //
-								DELIMITER ;");
 			log_info($this->name, "Installed tables for the Notes extension at " . $name . ".");
 			$config->set_int($this->name. "_version", 1);
 		}
