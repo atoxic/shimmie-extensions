@@ -15,7 +15,7 @@ class NotesTheme extends Themelet
 						$this->generateNotes($page, $user, $notes, $image_id);
 		if(!$user->is_anonymous())
 			$main_block .= $this->generateFloatingControls();
-		$page->add_block(new Block("Notes", $main_block, "main"));
+		$page->add_block(new Block("", $main_block, "main"));
 	}
 	
 	private function userPermission(User $user)

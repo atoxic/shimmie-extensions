@@ -37,7 +37,15 @@ HTML;
 HTML;
 		}
 		$string .= "</table>";
-		$page->add_block(new Block("SLExt", $string));
+		$page->add_block(new Block("Other Versions", $string));
+	}
+	
+	public function displayVersionManagement(Page $page, User $user, $image_id)
+	{
+		$string = <<<HTML
+			<a href="?q=/versions/$image_id">View all versions</a>
+HTML;
+		$page->add_block(new Block("Version Management", $string));
 	}
 }
 ?>

@@ -59,7 +59,15 @@ class SLExt extends SimpleExtension
 	public function onPageRequest(PageRequestEvent $event)
 	{
 		global $page, $user;
-		if($event->page_matches("versions"))
+		if($event->page_matches("post"))
+		{
+			// viewing an image
+			if($event->count_args() == 2 && $event->get_arg(0) == "view" && is_numeric($event->get_arg(1)))
+			{
+				$this->theme->displayVersionManagement($page, $user, $event->get_arg(1));
+			}
+		}
+		else if($event->page_matches("versions"))
 		{
 			if($event->count_args() == 1)
 			{

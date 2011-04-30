@@ -178,7 +178,7 @@ class Notes extends SimpleExtension
 		if($event->page_matches("post"))
 		{
 			// viewing an image
-			if($event->get_arg(0) == "view")
+			if($event->count_args() == 2 && $event->get_arg(0) == "view")
 			{
 				$notes = $this->getNotes($event->get_arg(1));
 				$this->theme->displayNotes($page, $user, $notes, $event->get_arg(1));
