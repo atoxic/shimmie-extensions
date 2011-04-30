@@ -87,11 +87,16 @@ class SLExt extends SimpleExtension
 		}
 		else if($event->page_matches("stage_change"))
 		{
-			if($event->count_args() == 2 && array_key_exists($event->get_arg(1), SLExtTheme::$stages_html))
+			if(!$user->is_anonymous() &&		// is a user
+				$event->count_args() == 0 && 	// no arguments
+				count($_POST) > 0 && array_key_exists("stage", $_POST) && array_key_exists("image_id", $_POST) &&	// has the arguments
+				array_key_exists($_POST["stage"], SLExtTheme::$stages_html))	// stage is valid
 			{
-				$image = Image::by_id($event->get_arg(0));
+				$image = Image::by_id($_POST["image_id"]);
+				if(is_null($image))
+					return;
 				$tags = $image->get_tag_array();
-				$new_tags = array($event->get_arg(1));
+				$new_tags = array($_POST["stage"]);
 				foreach($tags as $tag)
 				{
 					if(!preg_match("/stage_.+/", $tag))
@@ -102,7 +107,7 @@ class SLExt extends SimpleExtension
 				$image->set_tags($new_tags);
 				
 				$page->set_mode("redirect");
-				$page->set_redirect("?q=/post/view/" . $event->get_arg(0));
+				$page->set_redirect("?q=/post/view/" . $_POST["image_id"]);
 			}
 		}
 	}
