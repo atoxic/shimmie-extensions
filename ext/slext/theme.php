@@ -86,7 +86,7 @@ table.management input
 	margin: 3px;
 }
 </style>
-<table style='border: 1px solid; height: 100px;' class='management'><tr><td style='font-weight: bold;'>Stage: 
+<table style='border: 1px solid; height: 100px;' class='management'><tr style='font-weight: bold;'><td>Stage: 
 HTML;
 		
 		switch($stage)
@@ -95,32 +95,31 @@ HTML;
 			case "stage_tl":
 			case "stage_tlc":
 			case "stage_pr":
-				$string .= "Raw/Translation</td>" . SLExtTheme::outputTable(SLExtTheme::$stages_raw, $stage, $image_id);
+				$string .= "Raw/Translation</td><td>Upload New Version:</td></tr><tr>" . SLExtTheme::outputTable(SLExtTheme::$stages_raw, $stage, $image_id);
 				break;
 			case "stage_clean":
-				$string .= "Cleaned</td>";
+				$string .= "Cleaned</td><td>Upload New Version:</td></tr><tr><td></td>";
 				break;
 			case "stage_ts":
 			case "stage_alpha":
 			case "stage_beta":
 			case "stage_gold":
-				$string .= "Typesetted/QC</td>" . SLExtTheme::outputTable(SLExtTheme::$stages_ts, $stage, $image_id);
+				$string .= "Typesetted/QC</td><td>Upload New Version:</td></tr><tr>" . SLExtTheme::outputTable(SLExtTheme::$stages_ts, $stage, $image_id);
 				break;
 		}
 		
 		$form = make_form(make_link("stage_upload"), "POST", $multipart=True);
 		$string .=  <<<HTML
-			</tr><tr><td colspan="2" style='font-weight: bold;'>
-			Upload New Version:
-			</td></tr><tr><td colspan="2">
+			<td>
 			$form
-				File: <input accept='image/jpeg,image/png,image/gif' size='10' id='data0' name='data0' type='file'><br/>
+				<input type='hidden' name='image_id' value='$image_id' />
+				File: <input accept='image/jpeg,image/png,image/gif' size='10' id='file' name='file' type='file'><br/>
 				<input type="radio" name="stage" value="stage_raw" />Raw<br />
 				<input type="radio" name="stage" value="stage_clean" />Cleaned<br />
 				<input type="radio" name="stage" value="stage_ts" />Typesetted<br />
 				<input type='submit' value='Post'>
 			</form>
-			</td></tr>
+			</td>
 			</tr></table>
 			<a href="?q=/versions/$image_id">View all versions</a>
 HTML;
