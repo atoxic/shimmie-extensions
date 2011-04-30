@@ -16,13 +16,22 @@ class SLExt extends SimpleExtension
 	var $progress = "sl_progess";
 	
 	// regex for matching page tags
-	var $page_regex = '.*_c[[:digit:]]+_.*';
-	var $page_regex_exp = '/.*_c[[:digit:]]+_.*/';
-
-	public function getTag($regex, $image_id)
+	static $page_regex = '.*_c[[:digit:]]+_.*';
+	static $page_regex_exp = '/.*_c[[:digit:]]+_.*/';
+	
+	public static function getTags($image_id)
 	{
 		$image = Image::by_id($image_id);
 		$tags = $image->get_tag_array();
+		return($tags);
+	}
+	public static function getTagFromId($regex, $image_id)
+	{
+		$tags = SLExt::getTags($image_id);
+		return(SLExt::getTag($regex, $tags));
+	}
+	public static function getTag($regex, $tags)
+	{
 		$chapter_tag = NULL;
 		foreach($tags as $tag)
 		{
@@ -37,7 +46,7 @@ class SLExt extends SimpleExtension
 	
 	public function getOtherVersions($image_id)
 	{
-		$chapter_tag = $this->getTag($this->page_regex_exp, $image_id);
+		$chapter_tag = $this->getTagFromId(SLExt::$page_regex_exp, $image_id);
 		if(is_null($chapter_tag))
 			return("no chapter tag");
 			
@@ -49,7 +58,7 @@ class SLExt extends SimpleExtension
 		$array = array();
 		foreach($image_list as $image)
 		{
-			$stage_tag = $this->getTag('/stage_.+/', $image['image_id']);
+			$stage_tag = $this->getTagFromId('/stage_.+/', $image['image_id']);
 			if(!is_null($stage_tag))
 				$array[$image['image_id']] = $stage_tag;
 		}
