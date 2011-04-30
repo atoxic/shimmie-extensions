@@ -39,18 +39,9 @@ class Notes extends SimpleExtension
 							$image_id)
 	{
 		global $database;
-		$database->Execute("INSERT INTO " . $this->name .
-							" 		(text,	user,	date,	note_group,					x,	y,	w,	h) " .
-							"VALUES	(?, 	?, 		now(),	0, 							?,	?,	?,	?)",
-							array	($text,	$user, 										$x, $y, $w,	$h));
-		$result = $database->get_row("SELECT LAST_INSERT_ID() AS noteID");
-		$note_id = $result["noteID"];
-		$database->Execute("UPDATE " . $this->name . " SET note_group=? WHERE id=?", array($note_id, $note_id));
-		$database->Execute("INSERT INTO " . $this->link_name . " (image_id, note_id) " .
-							"VALUES (?, 		?)",
-							array	($image_id,	$note_id));
+		$result = $database->get_row("SELECT add_note(?, ?, ?, ?, ?, ?, ?) AS noteID", array($text,$user, $x, $y, $w, $h, $image_id));
 		
-		return($note_id);
+		return($result["noteID"]);
 	}
 	/*
 		Adds a new version of a note into the note group
@@ -155,6 +146,17 @@ class Notes extends SimpleExtension
 					image_id INTEGER NOT NULL,
 					note_id INTEGER NOT NULL
 					");
+			$database->execute("DELIMITER //
+								CREATE FUNCTION add_note(text text, user int(11), x int(11), y int(11), w int(11), h int(11), image_id int(11))
+								RETURNS INT
+								BEGIN
+								INSERT INTO notes (text, user, date, note_group, x, y, w, h) VALUES (text, user, now(), 0, x, y, w, h);
+								SELECT LAST_INSERT_ID() into @id;
+								UPDATE notes SET note_group=@id WHERE id=@id;
+								INSERT INTO image_notes (image_id, note_id) VALUES (image_id, @id);
+								RETURN @id;
+								END //
+								DELIMITER ;");
 			log_info($this->name, "Installed tables for the Notes extension at " . $name . ".");
 			$config->set_int($this->name. "_version", 1);
 		}
