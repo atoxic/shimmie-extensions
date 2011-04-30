@@ -73,6 +73,8 @@ HTML;
 	{
 		$tags = SLExt::getTags($image_id);
 		$stage = SLExt::getTag('/stage_.+/', $tags);
+		if(is_null($stage))
+			return;
 		$string = <<<HTML
 <style type="text/css">
 table.management td

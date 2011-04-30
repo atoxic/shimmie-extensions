@@ -88,13 +88,15 @@ class Notes extends SimpleExtension
 	public function getNotes($image_id)
 	{
 		global $database;
-		$links = $database->get_all("SELECT * FROM " . $this->link_name . " WHERE image_id=?", array($image_id));
-		
+		// get all of notes associated with the image
+		$result = $database->get_all("SELECT * FROM " . $this->name . " WHERE note_group IN (SELECT note_id FROM " . $this->link_name . " WHERE image_id=?)", array($image_id));
 		$notes = array();
-		foreach($links as $link)
+		foreach($result as $note)
 		{
-			$result = $database->get_all("SELECT * FROM " . $this->name . " WHERE note_group=?", array($link["note_id"]));
-			$notes[] = $result[count($result) - 1];
+			if(!array_key_exists($note["note_group"], $notes) || $notes[$note["note_group"]]["date"] < $note["date"])
+			{
+				$notes[$note["note_group"]] = $note;
+			}
 		}
 		return($notes);
 	}
@@ -107,10 +109,8 @@ class Notes extends SimpleExtension
 	public function getNoteHistory($note_id)
 	{
 		global $database;
-		// get the group
-		$note = $database->get_row("SELECT * FROM " . $this->name . " WHERE id=?", array($note_id));
 		// get all of the notes
-		$notes = $database->get_all("SELECT * FROM " . $this->name . " WHERE note_group=?", array($note["note_group"]));
+		$notes = $database->get_all("SELECT * FROM " . $this->name . " WHERE note_group=(SELECT note_group FROM " . $this->name . " WHERE id=?)", array($note_id));
 		return($notes);
 	}
 	
