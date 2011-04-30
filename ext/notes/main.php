@@ -74,11 +74,11 @@ class Notes extends SimpleExtension
 		global $database;
 		// get all of notes associated with the image
 		$result = $database->get_all("SELECT * FROM " . $this->name . " WHERE note_group IN (SELECT note_id FROM " . $this->link_name . " WHERE image_id=?)", array($image_id));
-		// only get the newest note out of each group
+		// only get the newest note out of each group (id should be ordered by group, unless the db is travling through time.  No, bad Homura!)
 		$notes = array();
 		foreach($result as $note)
 		{
-			if(!array_key_exists($note["note_group"], $notes) || $notes[$note["note_group"]]["date"] < $note["date"])
+			if(!array_key_exists($note["note_group"], $notes) || $notes[$note["note_group"]]["id"] < $note["id"])
 			{
 				$notes[$note["note_group"]] = $note;
 			}
@@ -107,7 +107,7 @@ class Notes extends SimpleExtension
 	public function removeNote($note_id)
 	{
 		global $database;
-		$database->execute("DELETE FROM " . $this->link_name . " WHERE note_id=?", array($note_id));
+		$database->execute("DELETE FROM " . $this->link_name . " WHERE note_id=(SELECT note_group FROM " . $this->name . " WHERE id=?)", array($note_id));
 	}
 	
 	/* ======================================================
