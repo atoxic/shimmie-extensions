@@ -41,12 +41,23 @@ class NotesTheme extends Themelet
 <link rel="stylesheet" type="text/css" href="$data_href/lib/ext_notes/PhotoNotes.v1.css" />
 <script type="text/javascript" src="$data_href/lib/ext_notes/PhotoNotes.v1.js"> </script>
 
+<!-- For Shortcuts -->	
+<script type="text/javascript" src="$data_href/lib/ext_notes/shortcut.js"> </script>
+
 <!-- For AJAX functions -->
 <script type="text/javascript" src="$data_href/lib/ext_notes/shimmie.js"> </script>
 
 <!-- For common function and styles -->
 <link rel="stylesheet" type="text/css" href="$data_href/lib/ext_notes/ext_notes.css" />
 <script type="text/javascript" src="$data_href/lib/ext_notes/ext_notes.js"> </script>
+
+<script type="text/javascript">
+shortcut.add("N",
+function()
+{
+	add_note_init($image_id, $permission);
+});
+</script>
 
 JS;
 		return($string);
