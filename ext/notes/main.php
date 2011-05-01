@@ -168,31 +168,38 @@ class Notes extends SimpleExtension
 			
 			if($this->use_sql_functions)
 			{
-				$name = $this->name;
-				$link_name = $this->link_name;
-				
-				$database->execute("DROP FUNCTION IF EXISTS change_note");
-				$statement = $database->db->prepare("CREATE FUNCTION change_note(text text, user int(11), x int(11), y int(11), w int(11), h int(11), old_note_id int(11))
-													RETURNS INT
-													BEGIN
-													SELECT note_group FROM $name WHERE id=old_note_id INTO @group;
-													INSERT INTO $name (text, user, date, note_group, x, y, w, h) VALUES (text, user, now(), @group, x, y, w, h);
-													RETURN LAST_INSERT_ID();
-													END");
-				$database->db->query($statement);
-				
-				$database->execute("DROP FUNCTION IF EXISTS add_note");
-				$statement = $database->db->prepare("CREATE FUNCTION add_note(text text, user int(11), x int(11), y int(11), w int(11), h int(11), image_id int(11))
-													RETURNS INT
-													BEGIN
-													INSERT INTO $name (text, user, date, note_group, x, y, w, h) VALUES (text, user, now(), 0, x, y, w, h);
-													SELECT LAST_INSERT_ID() into @id;
-													UPDATE $name SET note_group=@id WHERE id=@id;
-													INSERT INTO $link_name (image_id, note_id) VALUES (image_id, @id);
-													RETURN @id;
-													END");
-				$database->db->query($statement);
-			}			
+				try
+				{
+					$name = $this->name;
+					$link_name = $this->link_name;
+					
+					$database->execute("DROP FUNCTION IF EXISTS change_note");
+					$statement = $database->db->prepare("CREATE FUNCTION change_note(text text, user int(11), x int(11), y int(11), w int(11), h int(11), old_note_id int(11))
+														RETURNS INT
+														BEGIN
+														SELECT note_group FROM $name WHERE id=old_note_id INTO @group;
+														INSERT INTO $name (text, user, date, note_group, x, y, w, h) VALUES (text, user, now(), @group, x, y, w, h);
+														RETURN LAST_INSERT_ID();
+														END");
+					$database->db->query($statement);
+					
+					$database->execute("DROP FUNCTION IF EXISTS add_note");
+					$statement = $database->db->prepare("CREATE FUNCTION add_note(text text, user int(11), x int(11), y int(11), w int(11), h int(11), image_id int(11))
+														RETURNS INT
+														BEGIN
+														INSERT INTO $name (text, user, date, note_group, x, y, w, h) VALUES (text, user, now(), 0, x, y, w, h);
+														SELECT LAST_INSERT_ID() into @id;
+														UPDATE $name SET note_group=@id WHERE id=@id;
+														INSERT INTO $link_name (image_id, note_id) VALUES (image_id, @id);
+														RETURN @id;
+														END");
+					$database->db->query($statement);
+				}
+				catch(Exception $e)
+				{
+					
+				}
+			}		
 			
 			log_info($this->name, "Installed tables for the Notes extension at " . $name . ".");
 			$config->set_int($this->name. "_version", 1);
@@ -237,9 +244,22 @@ class Notes extends SimpleExtension
 		else if($event->page_matches("note_add"))
 		{
 			$page->set_mode("data");
-			if($event->count_args() == 1 && !$user->is_anonymous())
+			if($user->is_anonymous())
+			{
+				$page->set_data(-1);
+				return;
+			}
+			if($event->count_args() == 1)
 			{
 				$id = $this->addNote("new note", $user->id, 30, 30, 30, 30, $event->get_arg(0));
+				$page->set_data($id);
+			}
+			else if($event->count_args() >= 6)
+			{
+				$text = $event->get_arg(5);
+				for($i = 6; $i < $event->count_args(); $i++)
+					$text .= "/" . $event->get_arg($i);
+				$id = $this->addNote($text, $user->id, $event->get_arg(1), $event->get_arg(2), $event->get_arg(3), $event->get_arg(4), $event->get_arg(0));
 				$page->set_data($id);
 			}
 			else

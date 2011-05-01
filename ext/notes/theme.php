@@ -14,7 +14,7 @@ class NotesTheme extends Themelet
 		$main_block = $this->generateCommon($page, $user, $notes, $image_id). 
 						$this->generateNotes($page, $user, $notes, $image_id);
 		if(!$user->is_anonymous())
-			$main_block .= $this->generateFloatingControls();
+			$main_block .= $this->generateFloatingControls($page, $user, $notes, $image_id);
 		$page->add_block(new Block("", $main_block, "main"));
 	}
 	
@@ -48,30 +48,20 @@ class NotesTheme extends Themelet
 <link rel="stylesheet" type="text/css" href="$data_href/lib/ext_notes/ext_notes.css" />
 <script type="text/javascript" src="$data_href/lib/ext_notes/ext_notes.js"> </script>
 
-<script type="text/javascript">
-function add_note_init()
-{
-	callback = function(response)
-	{
-		add_note(response, "new note", 30, 30, 30, 30, $permission);
-	};
-	
-	ajaxRequest("?q=/note_add/$image_id", callback);
-}
-</script>
-
 JS;
 		return($string);
 	}
 	/*
 		Controls on the side
 	 */
-	public function generateControls()
+	public function generateControls(Page $page, User $user, $notes, $image_id)
 	{
+		$permission = $this->userPermission($user);
+	
 		$string = <<<JS
 		
 <form>
-<input type="button" value="New Note" name="button1" onClick="javascript:add_note_init();">
+<input type="button" value="New Note" name="button1" onClick="javascript:add_note_init($image_id, $permission);">
 </form> 
 
 JS;
@@ -80,12 +70,12 @@ JS;
 	/*
 		Controls floating on the bottom left
 	 */
-	public function generateFloatingControls()
+	public function generateFloatingControls(Page $page, User $user, $notes, $image_id)
 	{
 		$string = <<<JS
 <div style="position: fixed; left: 0px; bottom: 0px; padding: 10px; border: 1px solid; background: white;">
 JS
-. $this->generateControls() . <<<JS
+. $this->generateControls($page, $user, $notes, $image_id) . <<<JS
 </div> 
 
 JS;

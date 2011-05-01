@@ -22,6 +22,15 @@ AJAX events
 /note_add/image_id
 	-image_id: id of image to initialize this note to
 	-returns the id of the note that was added if succeeded, -1 if failed
+	
+/note_add/id/x/y/w/h/text
+	-id: id of image
+	-x:
+	-y: coordinates of the note
+	-w:
+	-h: dimensions of the note
+	-text: note text
+	-returns the id of the note that was added if succeeded, -1 if failed
 
 /note_change/id/x/y/w/h/text
 	-id: id of old note
