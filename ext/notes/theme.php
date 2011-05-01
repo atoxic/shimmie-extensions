@@ -52,7 +52,7 @@ class NotesTheme extends Themelet
 <script type="text/javascript" src="$data_href/lib/ext_notes/ext_notes.js"> </script>
 
 <script type="text/javascript">
-shortcut.add("N",
+shortcut.add("Alt+N",
 function()
 {
 	add_note_init($image_id, $permission);
