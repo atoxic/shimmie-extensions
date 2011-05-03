@@ -34,9 +34,62 @@ class SLExtTheme extends Themelet
 		$this->display_error($page, "Error fetching versions", "Error: Could not get versions of the image specified");
 	}
 	
+	public function displayStageProgessCacheInit(Page $page)
+	{
+		$page->set_title("Stage Progress Cache Initialized");
+		$page->add_block(new Block("Stage Progress Cache Initialized", "Initialization of stage progress cache db is a success."));
+	}
+	
 	public function displayStageChangeError(Page $page)
 	{
 		$this->display_error($page, "Stage Change Error", "Error: Could not change stages");
+	}
+	
+	public function displayStageProgessCache(Page $page, $array)
+	{
+		$string = <<<HTML
+<style type="text/css">
+table.stage_table tr:first-child td
+{
+	max-width: 100px;
+	min-width: 100px;
+}
+table.stage_table
+{
+	border: 1px solid;
+}
+table.stage_table td
+{
+	border: 1px solid;
+	padding: 2px;
+}
+</style>
+<table class="stage_table"><tr><td>Page</td>
+HTML;
+		foreach(SLExt::$stages as $stage)
+		{
+			$string .= "<td>" . SLExtTheme::$stages_html[$stage] . "</td>";
+		}
+		$string .= "</tr>";
+		foreach($array as $page_tag => $list)
+		{
+			$string .= "<tr><td>$page_tag</td>";
+			//*
+			for($i = 0; $i < count(SLExt::$stages); $i++)
+			{
+				$string .= "<td>";
+				foreach($list[$i] as $image_id)
+				{
+					$string .= "<a href='?q=/post/view/$image_id'>$image_id</a><br/>";
+				}
+				$string .= "</td>";
+			}
+			// */
+			$string .= "</tr>";
+		}
+		$string .= "</table>";
+		$page->set_title("Stage Progress");
+		$page->add_block(new Block("Stage Progress", $string));
 	}
 	
 	public function displayVersions(Page $page, User $user, $array)

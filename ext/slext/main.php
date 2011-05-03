@@ -26,7 +26,7 @@ class SLExt extends SimpleExtension
 	);
 
 	// table for caching progress
-	var $db = "slext_progess_cache";
+	var $db = "slext_progress_cache";
 	
 	// regex for matching page tags
 	static $page_regex = '.*_c[[:digit:]]+_.*';
@@ -90,6 +90,54 @@ class SLExt extends SimpleExtension
 		return($array);
 	}
 	
+	public function initProgressCache()
+	{
+		global $database;
+		$database->execute("TRUNCATE " . $this->db);
+		$images = Image::find_images(0, 10000000000);
+		foreach($images as $image)
+		{
+			$tags = $image->get_tag_array();
+			$stage = SLExt::getTag(SLExt::$stage_regex_exp, $tags);
+			$chapter = SLExt::getTag(SLExt::$page_regex_exp, $tags);
+			if(isset($stage) && in_array($stage, SLExt::$stages) && isset($chapter))
+			{
+				$database->execute("INSERT INTO " . $this->db . " (image_id, stage, page) VALUES (?, ?, ?)", 
+											array($image->id, array_search($stage, SLExt::$stages), $chapter));
+			}
+		}
+	}
+	
+	/* Fetches the progress cache
+	 * Returned data structure:
+	 * array of chapter to (array of stage to (array of image_id)
+	 */
+	public function getProgressCache()
+	{
+		global $database;
+		$table = $database->get_all("SELECT * FROM " . $this->db . " ORDER BY stage, page");
+		$cache = array();
+		$list = array();
+		$prev = null;
+		foreach($table as $row)
+		{
+			if($prev != $row["page"])
+			{
+				if(isset($prev))
+				{
+					$cache[$prev] = $list;
+					$list = array();
+				}
+				$prev = $row["page"];
+			}
+			if(!array_key_exists($row["stage"], $list))
+				$list[$row["stage"]] = array();
+			$list[$row["stage"]][] = $row["image_id"];
+		}
+		$cache[$prev] = $list;
+		return($cache);
+	}
+	
 	/* ======================================================
 		EVENT FUNCTIONS
 	   ====================================================== */
@@ -104,7 +152,7 @@ class SLExt extends SimpleExtension
 			$database->create_table($this->db, "
 					image_id INTEGER NOT NULL DEFAULT 0,
 					stage TINYINT NOT NULL DEFAULT 0,
-					chapter_tag varchar(64) NOT NULL
+					page varchar(64) NOT NULL
 					");
 					
 			log_info($this->db, "Installed tables for the SLExt extension at " . $this->db . ".");
@@ -141,6 +189,21 @@ class SLExt extends SimpleExtension
 			
 			$page->set_title("Versions of image " . $event->get_arg(0));
 			$this->theme->displayVersions($page, $user, $str);
+		}
+		else if($event->page_matches("stage_progress"))
+		{
+			$array = $this->getProgressCache();
+			$this->theme->displayStageProgessCache($page, $array);
+		}
+		else if($event->page_matches("stage_progress_init"))
+		{
+			if(!$user->is_admin())
+			{
+				$this->theme->display_permission_denied($page);
+				return;
+			}
+			$this->initProgressCache();
+			$this->theme->displayStageProgessCacheInit($page);
 		}
 		else if($event->page_matches("stage_change"))
 		{
