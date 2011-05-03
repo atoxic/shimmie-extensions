@@ -110,7 +110,7 @@ class SLExt extends SimpleExtension
 	
 	/* Fetches the progress cache
 	 * Returned data structure:
-	 * array of chapter to (array of stage to (array of image_id)
+	 * array of page to (array of stage to (array of image_id)
 	 */
 	public function getProgressCache()
 	{
@@ -155,7 +155,7 @@ class SLExt extends SimpleExtension
 					page varchar(64) NOT NULL
 					");
 					
-			log_info($this->db, "Installed tables for the SLExt extension at " . $this->db . ".");
+			log_info("SLExt", "Installed tables for the SLExt extension at " . $this->db . ".");
 			$config->set_int($this->db . "_version", 1);
 		}
 	}
@@ -235,7 +235,8 @@ class SLExt extends SimpleExtension
 					$new_tags[] = $tag;
 				}
 			}
-			$image->set_tags($new_tags);
+			
+			send_event(new TagSetEvent($image, $new_tags));
 			
 			$page->set_mode("redirect");
 			$page->set_redirect("?q=/post/view/" . $_POST["image_id"]);
@@ -279,6 +280,11 @@ class SLExt extends SimpleExtension
 				$page->set_redirect("?q=/post/view/" . $image_id);
 			}
 		}
+	}
+	
+	public function onTagSet(TagSetEvent $event)
+	{		
+		$this->initProgressCache();
 	}
 	
 	/* Gets the URL of the index script of shimmie
