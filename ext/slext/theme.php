@@ -78,9 +78,12 @@ HTML;
 			for($i = 0; $i < count(SLExt::$stages); $i++)
 			{
 				$string .= "<td>";
-				foreach($list[$i] as $image_id)
+				if(array_key_exists($i, $list))
 				{
-					$string .= "<a href='?q=/post/view/$image_id'>$image_id</a><br/>";
+					foreach($list[$i] as $image_id)
+					{
+						$string .= "<a href='?q=/post/view/$image_id'>$image_id</a><br/>";
+					}
 				}
 				$string .= "</td>";
 			}

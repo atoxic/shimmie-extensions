@@ -110,12 +110,12 @@ class SLExt extends SimpleExtension
 	
 	/* Fetches the progress cache
 	 * Returned data structure:
-	 * array of page to (array of stage to (array of image_id)
+	 * array of page to (array of stage to (array of image_id))
 	 */
 	public function getProgressCache()
 	{
 		global $database;
-		$table = $database->get_all("SELECT * FROM " . $this->db . " ORDER BY stage, page");
+		$table = $database->get_all("SELECT * FROM " . $this->db . " ORDER BY image_id, stage, page");
 		$cache = array();
 		$list = array();
 		$prev = null;
