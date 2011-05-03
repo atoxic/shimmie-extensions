@@ -26,7 +26,17 @@ class SLExtTheme extends Themelet
 	
 	public function displayStageUploadError(Page $page, $string)
 	{
-		$this->display_error($page, "Stage Upload Problem", (isset($string) ? $string : "Problem uploading a new stage.") . "<br/>Try uploading again or using the <a href='?q=/upload'>normal uploader</a>");
+		$this->display_error($page, "Stage Upload Error", "Error: " . (isset($string) ? $string : "problem uploading a new stage.") . "<br/>Try uploading again or using the <a href='?q=/upload'>normal uploader</a>");
+	}
+	
+	public function displayVersionsError(Page $page)
+	{
+		$this->display_error($page, "Error fetching versions", "Error: Could not get versions of the image specified");
+	}
+	
+	public function displayStageChangeError(Page $page)
+	{
+		$this->display_error($page, "Stage Change Error", "Error: Could not change stages");
 	}
 	
 	public function displayVersions(Page $page, User $user, $array)

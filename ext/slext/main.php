@@ -11,8 +11,21 @@
 
 class SLExt extends SimpleExtension
 {
+	static $stages = array
+	(
+		"stage_raw",
+		"stage_tl",
+		"stage_tlc",
+		"stage_pr",
+		"stage_clean",
+		"stage_ts",
+		"stage_alpha",
+		"stage_beta",
+		"stage_gold"
+	);
+
 	// table for caching progress
-	var $progress = "sl_progess";
+	var $progress = "slext_progess_cache";
 	
 	// regex for matching page tags
 	static $page_regex = '.*_c[[:digit:]]+_.*';
@@ -23,12 +36,16 @@ class SLExt extends SimpleExtension
 	public static function getTags($image_id)
 	{
 		$image = Image::by_id($image_id);
+		if(!isset($image))
+			return(null);
 		$tags = $image->get_tag_array();
 		return($tags);
 	}
 	public static function getTagFromId($regex, $image_id)
 	{
 		$tags = SLExt::getTags($image_id);
+		if(!isset($tags))
+			return(null);
 		return(SLExt::getTag($regex, $tags));
 	}
 	public static function getTag($regex, $tags)
@@ -48,8 +65,8 @@ class SLExt extends SimpleExtension
 	public function getOtherVersions($image_id)
 	{
 		$chapter_tag = $this->getTagFromId(SLExt::$page_regex_exp, $image_id);
-		if(is_null($chapter_tag))
-			return("no chapter tag");
+		if(!isset($chapter_tag))
+			return(null);
 			
 		global $database;
 		$tag_record = $database->get_row("SELECT * FROM `tags` WHERE tag=?", array($chapter_tag));
@@ -82,37 +99,57 @@ class SLExt extends SimpleExtension
 		}
 		else if($event->page_matches("versions"))
 		{
-			if($event->count_args() == 1)
+			if($event->count_args() != 1)
 			{
-				$page->set_title("Versions of image " . $event->get_arg(0));
-				$str = $this->getOtherVersions($event->get_arg(0));
-				$this->theme->displayVersions($page, $user, $str);
+				$this->theme->displayVersionsError($page);
+				return;
 			}
+			
+			$str = $this->getOtherVersions($event->get_arg(0));
+			
+			if(!isset($str))
+			{
+				$this->theme->displayVersionsError($page);
+				return;
+			}
+			
+			$page->set_title("Versions of image " . $event->get_arg(0));
+			$this->theme->displayVersions($page, $user, $str);
 		}
 		else if($event->page_matches("stage_change"))
 		{
-			if(!$user->is_anonymous() &&		// is a user
-				$event->count_args() == 0 && 	// no arguments
-				count($_POST) > 0 && array_key_exists("stage", $_POST) && array_key_exists("image_id", $_POST) &&	// has the arguments
-				array_key_exists($_POST["stage"], SLExtTheme::$stages_html))	// stage is valid
+			if($user->is_anonymous())
 			{
-				$image = Image::by_id($_POST["image_id"]);
-				if(is_null($image))
-					return;
-				$tags = $image->get_tag_array();
-				$new_tags = Tag::explode($_POST["stage"]);
-				foreach($tags as $tag)
-				{
-					if(!preg_match(SLExt::$stage_regex_exp, $tag))
-					{
-						$new_tags[] = $tag;
-					}
-				}
-				$image->set_tags($new_tags);
-				
-				$page->set_mode("redirect");
-				$page->set_redirect("?q=/post/view/" . $_POST["image_id"]);
+				$this->theme->display_permission_denied($page);
+				return;
 			}
+			// make sure that we've been passed the right arguments
+			if($event->count_args() != 0 ||
+				count($_POST) <= 0 || !array_key_exists("stage", $_POST) || !array_key_exists("image_id", $_POST) ||
+				!in_array($_POST["stage"], SLExt::$stages))
+			{
+				$this->theme->displayStageChangeError($page);
+				return;
+			}
+			$image = Image::by_id($_POST["image_id"]);
+			if(!isset($image))
+			{
+				$this->theme->displayStageChangeError($page);
+				return;
+			}
+			$tags = $image->get_tag_array();
+			$new_tags = Tag::explode($_POST["stage"]);
+			foreach($tags as $tag)
+			{
+				if(!preg_match(SLExt::$stage_regex_exp, $tag))
+				{
+					$new_tags[] = $tag;
+				}
+			}
+			$image->set_tags($new_tags);
+			
+			$page->set_mode("redirect");
+			$page->set_redirect("?q=/post/view/" . $_POST["image_id"]);
 		}
 		else if($event->page_matches("stage_upload"))
 		{
@@ -121,7 +158,9 @@ class SLExt extends SimpleExtension
 				$this->theme->display_permission_denied($page);
 				return;
 			}
-			if(!isset($_POST['image_id']) || !isset($_POST['stage']) || !isset($_FILES['file']))
+			if($event->count_args() != 0 ||
+				count($_POST) <= 0 || !array_key_exists("image_id", $_POST) || !array_key_exists("stage", $_POST) || !isset($_FILES['file']) ||
+				!in_array($_POST["stage"], SLExt::$stages))
 			{
 				$this->theme->displayStageUploadError($page);
 				return;
@@ -131,6 +170,11 @@ class SLExt extends SimpleExtension
 			$file = $_FILES['file'];
 			
 			$old_tags = SLExt::getTags($image_id);
+			if(!isset($old_tags))
+			{
+				$this->theme->displayStageUploadError($page);
+				return;
+			}
 			$new_tags = Tag::explode($_POST['stage']);
 			foreach($old_tags as $tag)
 			{
@@ -148,6 +192,8 @@ class SLExt extends SimpleExtension
 		}
 	}
 	
+	/* Gets the URL of the index script of shimmie
+	 */
 	private static function scriptName()
 	{
 		$pageURL = 'http';
@@ -156,12 +202,18 @@ class SLExt extends SimpleExtension
 		return $pageURL;
 	}
 	
+	/* Can the user upload?
+	 * Copied from the Upload extension
+	 */
 	private function can_upload($user)
 	{
 		global $config;
 		return($config->get_bool("upload_anon") || !$user->is_anonymous());
 	}
-
+	
+	/* Attempt an upload
+	 * Copied from the Upload extension
+	 */
 	private function try_upload($file, $tags, $source)
 	{
 		global $page;
