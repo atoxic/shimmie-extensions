@@ -97,14 +97,21 @@ class SLExt extends SimpleExtension
 		$images = Image::find_images(0, 10000000000);
 		foreach($images as $image)
 		{
+			$this->insertImageIntoCache($image);
+		}
+	}
+	
+	public function insertImageIntoCache($image, $tags = null)
+	{
+		global $database;
+		if(!isset($tags))
 			$tags = $image->get_tag_array();
-			$stage = SLExt::getTag(SLExt::$stage_regex_exp, $tags);
-			$chapter = SLExt::getTag(SLExt::$page_regex_exp, $tags);
-			if(isset($stage) && in_array($stage, SLExt::$stages) && isset($chapter))
-			{
-				$database->execute("INSERT INTO " . $this->db . " (image_id, stage, page) VALUES (?, ?, ?)", 
-											array($image->id, array_search($stage, SLExt::$stages), $chapter));
-			}
+		$stage = SLExt::getTag(SLExt::$stage_regex_exp, $tags);
+		$chapter = SLExt::getTag(SLExt::$page_regex_exp, $tags);
+		if(isset($stage) && in_array($stage, SLExt::$stages) && isset($chapter))
+		{
+			$database->execute("INSERT INTO " . $this->db . " (image_id, stage, page) VALUES (?, ?, ?)", 
+										array($image->id, array_search($stage, SLExt::$stages), $chapter));
 		}
 	}
 	
@@ -284,7 +291,10 @@ class SLExt extends SimpleExtension
 	
 	public function onTagSet(TagSetEvent $event)
 	{		
-		$this->initProgressCache();
+		//$this->initProgressCache();
+		global $database;
+		$database->execute("DELETE FROM " . $this->db . " WHERE image_id=?", array($event->image->id));
+		$this->insertImageIntoCache($event->image, $event->tags);
 	}
 	
 	/* Gets the URL of the index script of shimmie
