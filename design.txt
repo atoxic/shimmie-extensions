@@ -53,7 +53,7 @@ One table
 
 slext_cache: keeps track of stage progress
 	-image_id: the image that this particular event is associated with
-	-stage: the stage tag
+	-stage: the stage (as TINYINT index of SLExt::$stages)
 	-chapter: the chapter tag
 
 AJAX events

@@ -11,6 +11,7 @@
 
 class SLExt extends SimpleExtension
 {
+	// list of valid stages
 	static $stages = array
 	(
 		"stage_raw",
@@ -25,13 +26,18 @@ class SLExt extends SimpleExtension
 	);
 
 	// table for caching progress
-	var $progress = "slext_progess_cache";
+	var $db = "slext_progess_cache";
 	
 	// regex for matching page tags
 	static $page_regex = '.*_c[[:digit:]]+_.*';
 	static $page_regex_exp = '/.*_c[[:digit:]]+_.*/';
 	
+	// regex for matching stages
 	static $stage_regex_exp = '/stage_.+/';
+	
+	/* ======================================================
+		DATABASE FUNCTIONS
+	   ====================================================== */
 	
 	public static function getTags($image_id)
 	{
@@ -84,7 +90,27 @@ class SLExt extends SimpleExtension
 		return($array);
 	}
 	
+	/* ======================================================
+		EVENT FUNCTIONS
+	   ====================================================== */
 	
+	
+	public function onInitExt(Event $event)
+	{	
+		global $database, $config;
+		$version = $config->get_int($this->db . "_version", 0);
+		if($version < 1)
+		{
+			$database->create_table($this->db, "
+					image_id INTEGER NOT NULL DEFAULT 0,
+					stage TINYINT NOT NULL DEFAULT 0,
+					chapter_tag varchar(64) NOT NULL
+					");
+					
+			log_info($this->db, "Installed tables for the SLExt extension at " . $this->db . ".");
+			$config->set_int($this->db . "_version", 1);
+		}
+	}
 	
 	public function onPageRequest(PageRequestEvent $event)
 	{
