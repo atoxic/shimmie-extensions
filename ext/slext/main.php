@@ -4,10 +4,9 @@
  * Author: /a/non <anonymousscanlations@gmail.com>
  * Link: https://github.com/atoxic/shimmie-extensions
  * License: BSD
- * Description: Basic photo notes
+ * Description: Scanlation extensions
  * Documentation:
- *    Basic photo notes like in Flickr and Gel/Danbooru.
- *    Make sure to include the 5 or so JS and CSS files in the lib folder.
+ *    Extension for managing scanlation
  */
 
 class SLExt extends SimpleExtension
@@ -67,6 +66,9 @@ class SLExt extends SimpleExtension
 		
 		return($array);
 	}
+	
+	
+	
 	public function onPageRequest(PageRequestEvent $event)
 	{
 		global $page, $user;

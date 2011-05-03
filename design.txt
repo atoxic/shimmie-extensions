@@ -49,9 +49,22 @@ AJAX events
 
 * Scanlation Extensions
 
+One table
+
+slext_cache: keeps track of stage progress
+	-image_id: the image that this particular event is associated with
+	-stage: the stage tag
+	-chapter: the chapter tag
+
 AJAX events
 
 /stage_change/
 Form info:
 	-stage: the stage to change the image to
-	-image
+	-image_id: the id of the image
+
+/stage_upload/
+Form info:
+	-stage: the stage of the new image
+	-image_id: the id of the old image
+	-file: the image file
