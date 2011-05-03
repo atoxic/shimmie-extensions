@@ -190,7 +190,7 @@ class SLExt extends SimpleExtension
 			}
 			catch(UploadException $ex)
 			{
-				$this->theme->display_upload_error($page, "Error with " . html_escape($file['name']), $ex->getMessage());
+				$this->theme->displayStageUploadError($page, $ex->getMessage());
 				$ok = false;
 			}
 		}

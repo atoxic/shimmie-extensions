@@ -24,14 +24,9 @@ class SLExtTheme extends Themelet
 	);
 	static $stages_html;
 	
-	public function displayStageUploadError(Page $page)
+	public function displayStageUploadError(Page $page, $string)
 	{
-		$this->display_error($page, "Stage Upload Problem", "Problem uploading a new stage.  Try uploading again or using the <a href='?q=/upload'>normal uploader</a>");
-	}
-	
-	public function display_upload_error(Page $page, $title, $message)
-	{
-		$page->add_block(new Block($title, $message));
+		$this->display_error($page, "Stage Upload Problem", (isset($string) ? $string : "Problem uploading a new stage.") . "<br/>Try uploading again or using the <a href='?q=/upload'>normal uploader</a>");
 	}
 	
 	public function displayVersions(Page $page, User $user, $array)
