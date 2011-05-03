@@ -19,6 +19,8 @@ class SLExt extends SimpleExtension
 	static $page_regex = '.*_c[[:digit:]]+_.*';
 	static $page_regex_exp = '/.*_c[[:digit:]]+_.*/';
 	
+	static $stage_regex_exp = '/stage_.+/';
+	
 	public static function getTags($image_id)
 	{
 		$image = Image::by_id($image_id);
@@ -58,7 +60,7 @@ class SLExt extends SimpleExtension
 		$array = array();
 		foreach($image_list as $image)
 		{
-			$stage_tag = $this->getTagFromId('/stage_.+/', $image['image_id']);
+			$stage_tag = $this->getTagFromId(SLExt::$stage_regex_exp, $image['image_id']);
 			if(!is_null($stage_tag))
 				$array[$image['image_id']] = $stage_tag;
 		}
@@ -96,10 +98,10 @@ class SLExt extends SimpleExtension
 				if(is_null($image))
 					return;
 				$tags = $image->get_tag_array();
-				$new_tags = array($_POST["stage"]);
+				$new_tags = Tag::explode($_POST["stage"]);
 				foreach($tags as $tag)
 				{
-					if(!preg_match("/stage_.+/", $tag))
+					if(!preg_match(SLExt::$stage_regex_exp, $tag))
 					{
 						$new_tags[] = $tag;
 					}
@@ -110,6 +112,90 @@ class SLExt extends SimpleExtension
 				$page->set_redirect("?q=/post/view/" . $_POST["image_id"]);
 			}
 		}
+		else if($event->page_matches("stage_upload"))
+		{
+			if(!$this->can_upload($user))
+			{
+				$this->theme->display_permission_denied($page);
+				return;
+			}
+			if(!isset($_POST['image_id']) || !isset($_POST['stage']) || !isset($_FILES['file']))
+			{
+				$this->theme->displayStageUploadError($page);
+				return;
+			}
+			
+			$image_id = $_POST['image_id'];
+			$file = $_FILES['file'];
+			
+			$old_tags = SLExt::getTags($image_id);
+			$new_tags = Tag::explode($_POST['stage']);
+			foreach($old_tags as $tag)
+			{
+				if(!preg_match(SLExt::$stage_regex_exp, $tag))
+				{
+					$new_tags[] = $tag;
+				}
+			}
+			
+			if($this->try_upload($file, $new_tags, SLExt::scriptName() . "?q=/post/view/" . $image_id))
+			{
+				$page->set_mode("redirect");
+				$page->set_redirect("?q=/post/view/" . $image_id);
+			}
+		}
+	}
+	
+	private static function scriptName()
+	{
+		$pageURL = 'http';
+		if(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") { $pageURL .= "s"; }
+		$pageURL .= "://" . $_SERVER["SERVER_NAME"] . $_SERVER["SCRIPT_NAME"];
+		return $pageURL;
+	}
+	
+	private function can_upload($user)
+	{
+		global $config;
+		return($config->get_bool("upload_anon") || !$user->is_anonymous());
+	}
+
+	private function try_upload($file, $tags, $source)
+	{
+		global $page;
+		global $config;
+
+		if(empty($source)) $source = null;
+
+		$ok = true;
+
+		// blank file boxes cause empty uploads, no need for error message
+		if(file_exists($file['tmp_name']))
+		{
+			global $user;
+			$pathinfo = pathinfo($file['name']);
+			$metadata['filename'] = $pathinfo['basename'];
+			$metadata['extension'] = $pathinfo['extension'];
+			$metadata['tags'] = $tags;
+			$metadata['source'] = $source;
+			$event = new DataUploadEvent($user, $file['tmp_name'], $metadata);
+			try
+			{
+				send_event($event);
+				if($event->image_id == -1)
+				{
+					throw new UploadException("File type not recognised");
+				}
+				header("X-Shimmie-Image-ID: ".int_escape($event->image_id));
+			}
+			catch(UploadException $ex)
+			{
+				$this->theme->display_upload_error($page, "Error with " . html_escape($file['name']), $ex->getMessage());
+				$ok = false;
+			}
+		}
+
+		return $ok;
 	}
 }
 ?>

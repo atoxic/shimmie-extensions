@@ -1,4 +1,6 @@
-﻿Note: coordinates are relative to image (actually, the image container)
+﻿* Photo Notes
+
+Note: coordinates are relative to image (actually, the image container)
 
 Two tables
 
@@ -44,3 +46,12 @@ AJAX events
 /note_remove/id
 	-id: id of note to replace
 	-returns 1 if succeeded, -1 if failed
+
+* Scanlation Extensions
+
+AJAX events
+
+/stage_change/
+Form info:
+	-stage: the stage to change the image to
+	-image
