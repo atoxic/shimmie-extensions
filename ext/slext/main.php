@@ -246,7 +246,7 @@ class SLExt extends SimpleExtension
 			send_event(new TagSetEvent($image, $new_tags));
 			
 			$page->set_mode("redirect");
-			$page->set_redirect("?q=/post/view/" . $_POST["image_id"]);
+			$page->set_redirect(make_link("/post/view/" . $_POST["image_id"]));
 		}
 		else if($event->page_matches("stage_upload"))
 		{
@@ -284,14 +284,13 @@ class SLExt extends SimpleExtension
 			if($this->try_upload($file, $new_tags, SLExt::scriptName() . "?q=/post/view/" . $image_id))
 			{
 				$page->set_mode("redirect");
-				$page->set_redirect("?q=/post/view/" . $image_id);
+				$page->set_redirect(make_link("/post/view/" . $image_id));
 			}
 		}
 	}
 	
 	public function onTagSet(TagSetEvent $event)
-	{		
-		//$this->initProgressCache();
+	{
 		global $database;
 		$database->execute("DELETE FROM " . $this->db . " WHERE image_id=?", array($event->image->id));
 		$this->insertImageIntoCache($event->image, $event->tags);

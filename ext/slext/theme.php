@@ -26,7 +26,8 @@ class SLExtTheme extends Themelet
 	
 	public function displayStageUploadError(Page $page, $string)
 	{
-		$this->display_error($page, "Stage Upload Error", "Error: " . (isset($string) ? $string : "problem uploading a new stage.") . "<br/>Try uploading again or using the <a href='?q=/upload'>normal uploader</a>");
+		$upload = make_link("/upload");
+		$this->display_error($page, "Stage Upload Error", "Error: " . (isset($string) ? $string : "problem uploading a new stage.") . "<br/>Try uploading again or using the <a href='$upload'>normal uploader</a>");
 	}
 	
 	public function displayVersionsError(Page $page)
@@ -82,7 +83,8 @@ HTML;
 				{
 					foreach($list[$i] as $image_id)
 					{
-						$string .= "<a href='?q=/post/view/$image_id'>$image_id</a><br/>";
+						$link = make_link("/post/view/$image_id");
+						$string .= "<a href='$link'>$image_id</a><br/>";
 					}
 				}
 				$string .= "</td>";
@@ -111,8 +113,9 @@ HTML;
 			{
 				$value = json_encode($value);
 			}
+			$link = make_link("/post/view/$key");
 			$string .= <<<HTML
-<tr><td><a href="?q=/post/view/$key" />$key</a></td><td>$value</td></tr>
+<tr><td><a href="$link" />$key</a></td><td>$value</td></tr>
 HTML;
 		}
 		$string .= "</table>";
@@ -182,6 +185,7 @@ HTML;
 		}
 		
 		$form = make_form(make_link("stage_upload"), "POST", $multipart=True);
+		$link = make_link("/versions/$image_id");
 		$string .=  <<<HTML
 			<td>
 			$form
@@ -194,7 +198,7 @@ HTML;
 			</form>
 			</td>
 			</tr></table>
-			<a href="?q=/versions/$image_id">View all versions</a>
+			<a href="$link">View all versions</a>
 HTML;
 		$page->add_block(new Block("Version Management", $string, "main", 20));
 	}
