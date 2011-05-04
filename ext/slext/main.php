@@ -296,6 +296,11 @@ class SLExt extends SimpleExtension
 		$this->insertImageIntoCache($event->image, $event->tags);
 	}
 	
+	public function onUserBlockBuilding(UserBlockBuildingEvent $event)
+	{
+		$event->add_link("Stage Progress", make_link("stage_progress"));
+	}
+	
 	/* Gets the URL of the index script of shimmie
 	 */
 	private static function scriptName()
