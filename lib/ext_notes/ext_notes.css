@@ -4,6 +4,10 @@
 	position: relative;
 	display: inline-block;
 }
+#main_image
+{
+	margin-right: 300px;
+}
 .fn-area-inner
 {
 	opacity: 0.5;
