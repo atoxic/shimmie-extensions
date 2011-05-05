@@ -2,6 +2,7 @@
 #Imagemain
 {
 	position: relative;
+	display: inline-block;
 }
 .fn-area-inner
 {
