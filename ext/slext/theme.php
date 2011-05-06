@@ -23,6 +23,11 @@ class SLExtTheme extends Themelet
 		"stage_gold" 	=> "<span style='color: green;'>Gold</span>"
 	);
 	static $stages_html;
+	static $stages_break = array
+	(
+		4,
+		10
+	);
 	
 	public function displayStageUploadError(Page $page, $string = null)
 	{
@@ -69,16 +74,29 @@ table.stage_table td
 HTML;
 		foreach(SLExt::$stages as $stage)
 		{
-			$string .= "<td>" . SLExtTheme::$stages_html[$stage] . "</td>";
+			$string .= "<td style='$style'>" . SLExtTheme::$stages_html[$stage] . "</td>";
 		}
 		$string .= "</tr>";
+		$break = 0;
 		foreach($array as $page_tag => $list)
 		{
 			$string .= "<tr><td>$page_tag</td>";
-			//*
 			for($i = 0; $i < count(SLExt::$stages); $i++)
 			{
-				$string .= "<td>";
+				$style = "background: red;";
+				if($i >= SLExtTheme::$stages_break[$break])
+				{
+					$break++;
+				}
+				for($j = $i; $j < SLExtTheme::$stages_break[$break]; $j++)
+				{
+					if(array_key_exists($j, $list))
+					{
+						$style = "background: green;";
+						break;
+					}
+				}
+				$string .= "<td style='$style'>";
 				if(array_key_exists($i, $list))
 				{
 					foreach($list[$i] as $image_id)
@@ -89,7 +107,6 @@ HTML;
 				}
 				$string .= "</td>";
 			}
-			// */
 			$string .= "</tr>";
 		}
 		$string .= "</table>";
