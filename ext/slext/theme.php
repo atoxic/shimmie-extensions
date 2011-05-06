@@ -75,7 +75,7 @@ table.stage_table td
 HTML;
 		foreach(SLExt::$stages as $stage)
 		{
-			$string .= "<td style='$style'>" . SLExtTheme::$stages_html[$stage] . "</td>";
+			$string .= "<td>" . SLExtTheme::$stages_html[$stage] . "</td>";
 		}
 		$string .= "</tr>";
 		$break = 0;
@@ -93,7 +93,7 @@ HTML;
 				{
 					if(array_key_exists($j, $list))
 					{
-						$style = "background: green;";
+						$style = "";
 						break;
 					}
 				}
