@@ -24,7 +24,7 @@ class SLExtTheme extends Themelet
 	);
 	static $stages_html;
 	
-	public function displayStageUploadError(Page $page, $string)
+	public function displayStageUploadError(Page $page, $string = null)
 	{
 		$upload = make_link("/upload");
 		$this->display_error($page, "Stage Upload Error", "Error: " . (isset($string) ? $string : "problem uploading a new stage.") . "<br/>Try uploading again or using the <a href='$upload'>normal uploader</a>");

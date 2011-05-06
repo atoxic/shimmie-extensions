@@ -122,7 +122,7 @@ class SLExt extends SimpleExtension
 	public function getProgressCache()
 	{
 		global $database;
-		$table = $database->get_all("SELECT * FROM " . $this->db . " ORDER BY image_id, stage, page");
+		$table = $database->get_all("SELECT * FROM " . $this->db . " ORDER BY page, stage, image_id");
 		$cache = array();
 		$list = array();
 		$prev = null;
@@ -257,7 +257,7 @@ class SLExt extends SimpleExtension
 			}
 			if($event->count_args() != 0 ||
 				count($_POST) <= 0 || !array_key_exists("image_id", $_POST) || !array_key_exists("stage", $_POST) || !isset($_FILES['file']) ||
-				!in_array($_POST["stage"], SLExt::$stages))
+				!in_array($_POST["stage"], SLExt::$stages) || $_FILES['file']['error'])
 			{
 				$this->theme->displayStageUploadError($page);
 				return;
@@ -285,6 +285,10 @@ class SLExt extends SimpleExtension
 			{
 				$page->set_mode("redirect");
 				$page->set_redirect(make_link("/post/view/" . $image_id));
+			}
+			else
+			{
+				$this->theme->displayStageUploadError($page);
 			}
 		}
 	}
