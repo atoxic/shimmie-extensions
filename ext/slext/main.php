@@ -39,6 +39,7 @@ class SLExt extends SimpleExtension
 		DATABASE FUNCTIONS
 	   ====================================================== */
 	
+	// get array of tags from image (or returns null)
 	public static function getTags($image_id)
 	{
 		$image = Image::by_id($image_id);
@@ -47,13 +48,7 @@ class SLExt extends SimpleExtension
 		$tags = $image->get_tag_array();
 		return($tags);
 	}
-	public static function getTagFromId($regex, $image_id)
-	{
-		$tags = SLExt::getTags($image_id);
-		if(!isset($tags))
-			return(null);
-		return(SLExt::getTag($regex, $tags));
-	}
+	// gets first match of regex from array of tags
 	public static function getTag($regex, $tags)
 	{
 		$chapter_tag = NULL;
@@ -67,7 +62,16 @@ class SLExt extends SimpleExtension
 		}
 		return($chapter_tag);
 	}
+	// combines the two previous functions
+	public static function getTagFromId($regex, $image_id)
+	{
+		$tags = SLExt::getTags($image_id);
+		if(!isset($tags))
+			return(null);
+		return(SLExt::getTag($regex, $tags));
+	}
 	
+	// gets other versions of the same image (has same page tag) as array (or returns null)
 	public function getOtherVersions($image_id)
 	{
 		$chapter_tag = $this->getTagFromId(SLExt::$page_regex_exp, $image_id);
@@ -75,9 +79,8 @@ class SLExt extends SimpleExtension
 			return(null);
 			
 		global $database;
-		$tag_record = $database->get_row("SELECT * FROM `tags` WHERE tag=?", array($chapter_tag));
-		$tag_id = $tag_record['id'];
-		$image_list = $database->get_all("SELECT * FROM `image_tags` WHERE tag_id=?", array($tag_id));
+		$image_list = $database->get_all("SELECT * FROM `image_tags` WHERE tag_id=(SELECT id FROM `tags` WHERE tag=?)",
+										array($chapter_tag));
 		
 		$array = array();
 		foreach($image_list as $image)
@@ -90,6 +93,7 @@ class SLExt extends SimpleExtension
 		return($array);
 	}
 	
+	// deletes the progress cache and inserts all images into it again
 	public function initProgressCache()
 	{
 		global $database;
@@ -101,6 +105,7 @@ class SLExt extends SimpleExtension
 		}
 	}
 	
+	// tries to insert an image into the state progress cache
 	public function insertImageIntoCache($image, $tags = null)
 	{
 		global $database;

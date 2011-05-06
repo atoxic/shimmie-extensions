@@ -51,6 +51,7 @@ class SLExtTheme extends Themelet
 		$this->display_error($page, "Stage Change Error", "Error: Could not change stages");
 	}
 	
+	// displays stage progress from cache
 	public function displayStageProgessCache(Page $page, $array)
 	{
 		$string = <<<HTML
@@ -114,6 +115,7 @@ HTML;
 		$page->add_block(new Block("Stage Progress", $string));
 	}
 	
+	// displays list of versions in /versions/image_id
 	public function displayVersions(Page $page, User $user, $array)
 	{
 		$string = <<<HTML
@@ -139,6 +141,7 @@ HTML;
 		$page->add_block(new Block("Other Versions", $string));
 	}
 	
+	// produces stage change table
 	private static function outputTable($table, $stage, $image_id)
 	{
 		$form = make_form(make_link("stage_change"), "POST", $multipart=True);
@@ -160,6 +163,7 @@ HTML;
 		return(str_replace("$stage\"", "$stage\" checked='checked' ", $string));
 	}
 	
+	// version management table below an image
 	public function displayVersionManagement(Page $page, User $user, $image_id)
 	{
 		$tags = SLExt::getTags($image_id);
