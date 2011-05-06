@@ -300,6 +300,12 @@ class SLExt extends SimpleExtension
 		$this->insertImageIntoCache($event->image, $event->tags);
 	}
 	
+	public function onImageDeletion(ImageDeletionEvent $event)
+	{
+		global $database;
+		$database->execute("DELETE FROM " . $this->db . " WHERE image_id=?", array($event->image->id));
+	}
+	
 	public function onUserBlockBuilding(UserBlockBuildingEvent $event)
 	{
 		$event->add_link("Stage Progress", make_link("stage_progress"));
