@@ -100,7 +100,7 @@ HTML;
 		{
 			$thumb = $list["th_src"];
 			$th_link = make_link("post/view/" . $list["th_id"]);
-			$string .= "<tr><td>$page_tag<br/><a href='$th_link'><img class='pv_thumb' src='$thumb'></img></a></td>";
+			$string .= "<tr><td>$page_tag<br/><a href='$th_link' target='_blank'><img class='pv_thumb' src='$thumb'></img></a></td>";
 			for($i = 0; $i < count(SLExt::$stages); $i++)
 			{
 				$style = "background: red;";
@@ -122,7 +122,7 @@ HTML;
 					foreach($list[$i] as $image_id)
 					{
 						$link = make_link("/post/view/$image_id");
-						$string .= "<div class='image_link'><a href='$link'>$image_id</a></div>";
+						$string .= "<div class='image_link'><a href='$link' target='_blank'>$image_id</a></div>";
 					}
 				}
 				$string .= "</td>";
