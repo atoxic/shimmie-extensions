@@ -244,22 +244,15 @@ class Notes extends SimpleExtension
 		else if($event->page_matches("note_add"))
 		{
 			$page->set_mode("data");
-			if($user->is_anonymous())
+			if(!$user->is_anonymous() &&
+				array_key_exists("image_id", $_POST) &&
+				array_key_exists("x", $_POST) &&
+				array_key_exists("y", $_POST) &&
+				array_key_exists("w", $_POST) &&
+				array_key_exists("h", $_POST) &&
+				array_key_exists("text", $_POST))
 			{
-				$page->set_data(-1);
-				return;
-			}
-			if($event->count_args() == 1)
-			{
-				$id = $this->addNote("new note", $user->id, 30, 30, 30, 30, $event->get_arg(0));
-				$page->set_data($id);
-			}
-			else if($event->count_args() >= 6)
-			{
-				$text = $event->get_arg(5);
-				for($i = 6; $i < $event->count_args(); $i++)
-					$text .= "/" . $event->get_arg($i);
-				$id = $this->addNote($text, $user->id, $event->get_arg(1), $event->get_arg(2), $event->get_arg(3), $event->get_arg(4), $event->get_arg(0));
+				$id = $this->addNote($_POST["text"], $user->id, $_POST["x"], $_POST["y"], $_POST["w"], $_POST["h"], $_POST["image_id"]);
 				$page->set_data($id);
 			}
 			else
@@ -268,12 +261,15 @@ class Notes extends SimpleExtension
 		else if($event->page_matches("note_change"))
 		{
 			$page->set_mode("data");
-			if($event->count_args() >= 6 && !$user->is_anonymous())
+			if(!$user->is_anonymous() &&
+				array_key_exists("note_id", $_POST) &&
+				array_key_exists("x", $_POST) &&
+				array_key_exists("y", $_POST) &&
+				array_key_exists("w", $_POST) &&
+				array_key_exists("h", $_POST) &&
+				array_key_exists("text", $_POST))
 			{
-				$text = $event->get_arg(5);
-				for($i = 6; $i < $event->count_args(); $i++)
-					$text .= "/" . $event->get_arg($i);
-				$id = $this->changeNote($text, $user->id, $event->get_arg(1), $event->get_arg(2), $event->get_arg(3), $event->get_arg(4), $event->get_arg(0));
+				$id = $this->changeNote($_POST["text"], $user->id, $_POST["x"], $_POST["y"], $_POST["w"], $_POST["h"], $_POST["note_id"]);
 				$page->set_data($id);
 			}
 			else
@@ -282,9 +278,10 @@ class Notes extends SimpleExtension
 		else if($event->page_matches("note_remove"))
 		{
 			$page->set_mode("data");
-			if($event->count_args() == 1 && $user->is_admin())
+			if($user->is_admin() &&
+				array_key_exists("note_id", $_POST))
 			{
-				$this->removeNote($event->get_arg(0));
+				$this->removeNote($_POST["note_id"]);
 				$page->set_data(1);
 			}
 			else

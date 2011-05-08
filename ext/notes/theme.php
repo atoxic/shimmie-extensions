@@ -45,7 +45,7 @@ class NotesTheme extends Themelet
 <script type="text/javascript" src="$data_href/lib/ext_notes/shortcut.js"> </script>
 
 <!-- For AJAX functions -->
-<script type="text/javascript" src="$data_href/lib/ext_notes/shimmie.js"> </script>
+<script type="text/javascript" src="$data_href/lib/shimmie.js"> </script>
 
 <!-- For common function and styles -->
 <link rel="stylesheet" type="text/css" href="$data_href/lib/ext_notes/ext_notes.css" />

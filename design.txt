@@ -19,32 +19,34 @@ image_notes:
 	-image_id: id of image
 	-note_id: id of the note GROUP
 	
-AJAX events
-
-/note_add/image_id
-	-image_id: id of image to initialize this note to
-	-returns the id of the note that was added if succeeded, -1 if failed
+AJAX events (CHANGED!)
 	
-/note_add/id/x/y/w/h/text
-	-id: id of image
+/note_add/
+Form info:
+	-image_id: id of image
 	-x:
 	-y: coordinates of the note
 	-w:
 	-h: dimensions of the note
 	-text: note text
+	
 	-returns the id of the note that was added if succeeded, -1 if failed
 
-/note_change/id/x/y/w/h/text
-	-id: id of old note
+/note_change/
+Form info:
+	-note_id: id of old note
 	-x:
 	-y: coordinates of the note
 	-w:
 	-h: dimensions of the note
 	-text: note text
+	
 	-returns the id of the note that was added if succeeded, -1 if failed
 	
-/note_remove/id
-	-id: id of note to replace
+/note_remove/
+Form info:
+	-note_id: id of note to replace
+	
 	-returns 1 if succeeded, -1 if failed
 
 * Scanlation Extensions
