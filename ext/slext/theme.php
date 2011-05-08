@@ -95,12 +95,12 @@ HTML;
 			$string .= "<td>" . SLExtTheme::$stages_html[$stage] . "</td>";
 		}
 		$string .= "</tr>";
-		$break = 0;
 		foreach($array as $page_tag => $list)
 		{
 			$thumb = $list["th_src"];
 			$th_link = make_link("post/view/" . $list["th_id"]);
 			$string .= "<tr><td>$page_tag<br/><a href='$th_link' target='_blank'><img class='pv_thumb' src='$thumb'></img></a></td>";
+			$break = 0;
 			for($i = 0; $i < count(SLExt::$stages); $i++)
 			{
 				$style = "background: red;";
