@@ -24,6 +24,8 @@ class SLExt extends SimpleExtension
 		"stage_beta",
 		"stage_gold"
 	);
+	
+	static $show_pv = false;
 
 	// table for caching progress
 	var $db = "slext_progress_cache";
@@ -131,21 +133,31 @@ class SLExt extends SimpleExtension
 		$cache = array();
 		$list = array();
 		$prev = null;
+		$row = null;
+		$prev_id = null;
 		foreach($table as $row)
 		{
 			if($prev != $row["page"])
 			{
 				if(isset($prev))
 				{
+					// thumbnail is set to the last one by stage
+					$im = Image::by_id($prev_id);
+					$list["th_src"] = $im->get_thumb_link();
+					$list["th_id"] = $prev_id;
 					$cache[$prev] = $list;
 					$list = array();
 				}
 				$prev = $row["page"];
 			}
+			$prev_id = $row["image_id"];
 			if(!array_key_exists($row["stage"], $list))
 				$list[$row["stage"]] = array();
 			$list[$row["stage"]][] = $row["image_id"];
 		}
+		$im = Image::by_id($row["image_id"]);
+		$list["th_src"] = $im->get_thumb_link();
+		$list["th_id"] = $row["image_id"];
 		$cache[$prev] = $list;
 		return($cache);
 	}

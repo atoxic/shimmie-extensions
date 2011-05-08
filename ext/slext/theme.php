@@ -70,6 +70,23 @@ table.stage_table td
 	border: 1px solid;
 	padding: 2px;
 }
+div.image_link
+{
+	font-size: 18px;
+	margin: 5px;
+	padding: 2px;
+	border: 1px solid;
+	text-align: center;
+}
+div.image_link a
+{
+	padding: 2px 40px;
+	//background: #ddddff;
+}
+img.pv_thumb
+{
+	width: 80px;
+}
 </style>
 <table class="stage_table"><tr><td>Page</td>
 HTML;
@@ -81,7 +98,9 @@ HTML;
 		$break = 0;
 		foreach($array as $page_tag => $list)
 		{
-			$string .= "<tr><td>$page_tag</td>";
+			$thumb = $list["th_src"];
+			$th_link = make_link("post/view/" . $list["th_id"]);
+			$string .= "<tr><td>$page_tag<br/><a href='$th_link'><img class='pv_thumb' src='$thumb'></img></a></td>";
 			for($i = 0; $i < count(SLExt::$stages); $i++)
 			{
 				$style = "background: red;";
@@ -103,7 +122,7 @@ HTML;
 					foreach($list[$i] as $image_id)
 					{
 						$link = make_link("/post/view/$image_id");
-						$string .= "<a href='$link'>$image_id</a><br/>";
+						$string .= "<div class='image_link'><a href='$link'>$image_id</a></div>";
 					}
 				}
 				$string .= "</td>";
