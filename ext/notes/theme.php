@@ -44,9 +44,6 @@ class NotesTheme extends Themelet
 <!-- For Shortcuts -->	
 <script type="text/javascript" src="$data_href/lib/ext_notes/shortcut.js"> </script>
 
-<!-- For AJAX functions -->
-<script type="text/javascript" src="$data_href/lib/shimmie.js"> </script>
-
 <!-- For common styles -->
 <link rel="stylesheet" type="text/css" href="$data_href/lib/ext_notes/ext_notes.css" />
 
@@ -62,6 +59,11 @@ shortcut.add("Alt+N",
 function()
 {
 	add_note_init($image_id, $permission);
+});
+$("#main_image").dblclick(function(e)
+{
+	var offset = $("#main_image").offset();
+	add_note_init($image_id, $permission, e.pageX - offset.left, e.pageY - offset.top);
 });
 // ]]>
 </script>
