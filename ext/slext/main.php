@@ -108,6 +108,29 @@ class SLExt extends SimpleExtension
 		{
 			$this->insertImageIntoCache($image);
 		}
+		
+		// generate automatic pools
+		$pages = $database->get_all("SELECT page FROM " . $this->db . " GROUP BY page");
+		$chapters = array();
+		foreach($pages as $page)
+		{
+			$chapter = SLExt::getChapterFromPage($page['page']);
+			if(!isset($chapters[$chapter]))
+			{
+				$database->execute("DELETE FROM pools WHERE title=?", array($chapter));
+				$chapters[$chapter] = array();
+				$chapters[$chapter]['id'] = $this->add_pool($chapter);
+				$chapters[$chapter]['count'] = 0;
+			}
+			$database->execute("INSERT INTO pool_images (pool_id, image_id, image_order) VALUES (?, (SELECT image_id FROM slext_progress_cache WHERE page=? ORDER BY stage DESC LIMIT 1), ?)",
+							array($chapters[$chapter]['id'], $page['page'], substr($page['page'], strrpos($page['page'], "_") + 1)));
+			$chapters[$chapter]['count']++;
+		}
+		
+		foreach($chapters as $chapter => $attr)
+		{
+			$database->execute("UPDATE pools SET posts=? WHERE id=?", array($attr['count'], $attr['id']));
+		}
 	}
 	
 	// tries to insert an image into the state progress cache
@@ -117,12 +140,18 @@ class SLExt extends SimpleExtension
 		if(!isset($tags))
 			$tags = $image->get_tag_array();
 		$stage = SLExt::getTag(SLExt::$stage_regex_exp, $tags);
-		$chapter = SLExt::getTag(SLExt::$page_regex_exp, $tags);
-		if(isset($stage) && in_array($stage, SLExt::$stages) && isset($chapter))
+		$page = SLExt::getTag(SLExt::$page_regex_exp, $tags);
+		if(isset($stage) && in_array($stage, SLExt::$stages) && isset($page))
 		{
 			$database->execute("INSERT INTO " . $this->db . " (image_id, stage, page) VALUES (?, ?, ?)", 
-										array($image->id, array_search($stage, SLExt::$stages), $chapter));
+										array($image->id, array_search($stage, SLExt::$stages), $page));
 		}
+	}
+	
+	public function updateAutoPool($tags)
+	{
+		$page = $this->getTag(SLExt::$page_regex_exp, $tags);
+		
 	}
 	
 	/* Fetches the progress cache
@@ -317,6 +346,7 @@ class SLExt extends SimpleExtension
 		global $database;
 		$database->execute("DELETE FROM " . $this->db . " WHERE image_id=?", array($event->image->id));
 		$this->insertImageIntoCache($event->image, $event->tags);
+		$this->updateAutoPool($event->tags);
 	}
 	
 	public function onImageDeletion(ImageDeletionEvent $event)
@@ -339,6 +369,10 @@ class SLExt extends SimpleExtension
 		$pageURL .= "://" . $_SERVER["SERVER_NAME"] . $_SERVER["SCRIPT_NAME"];
 		return $pageURL;
 	}
+	
+	/* ======================================================
+		COPIED FUNCTIONS
+	   ====================================================== */
 	
 	/* Can the user upload?
 	 * Copied from the Upload extension
@@ -388,6 +422,35 @@ class SLExt extends SimpleExtension
 		}
 
 		return $ok;
+	}
+	
+	/*
+	 * HERE WE CREATE A NEW POOL
+	 */
+	private function add_pool($pool)
+	{
+		global $user, $database;
+
+		if($user->is_anonymous())
+		{
+			throw new PoolCreationException("You must be registered and logged in to add a image.");
+		}
+		if(empty($pool))
+		{
+			throw new PoolCreationException("Pool needs a title");
+		}
+
+		$public = "Y";
+		$database->execute("
+				INSERT INTO pools (user_id, public, title, description, date)
+				VALUES (?, ?, ?, ?, now())",
+				array($user->id, $public, $pool, "Automatically generated from the latest stages of $pool"));
+
+		$result = $database->get_row("SELECT LAST_INSERT_ID() AS poolID"); # FIXME database specific?
+
+		log_info("pools", "Pool {$result["poolID"]} created by {$user->name}");
+
+		return($result["poolID"]);
 	}
 }
 ?>
