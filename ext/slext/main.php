@@ -122,7 +122,7 @@ class SLExt extends SimpleExtension
 				$chapters[$chapter]['id'] = $this->add_pool($chapter);
 				$chapters[$chapter]['count'] = 0;
 			}
-			$database->execute("INSERT INTO pool_images (pool_id, image_id, image_order) VALUES (?, (SELECT image_id FROM slext_progress_cache WHERE page=? ORDER BY stage DESC LIMIT 1), ?)",
+			$database->execute("INSERT INTO pool_images (pool_id, image_id, image_order) VALUES (?, (SELECT image_id FROM " . $this->db . " WHERE page=? ORDER BY stage DESC, id LIMIT 1), ?)",
 							array($chapters[$chapter]['id'], $page['page'], substr($page['page'], strrpos($page['page'], "_") + 1)));
 			$chapters[$chapter]['count']++;
 		}
@@ -146,12 +146,6 @@ class SLExt extends SimpleExtension
 			$database->execute("INSERT INTO " . $this->db . " (image_id, stage, page) VALUES (?, ?, ?)", 
 										array($image->id, array_search($stage, SLExt::$stages), $page));
 		}
-	}
-	
-	public function updateAutoPool($tags)
-	{
-		$page = $this->getTag(SLExt::$page_regex_exp, $tags);
-		
 	}
 	
 	/* Fetches the progress cache
@@ -346,7 +340,6 @@ class SLExt extends SimpleExtension
 		global $database;
 		$database->execute("DELETE FROM " . $this->db . " WHERE image_id=?", array($event->image->id));
 		$this->insertImageIntoCache($event->image, $event->tags);
-		$this->updateAutoPool($event->tags);
 	}
 	
 	public function onImageDeletion(ImageDeletionEvent $event)
