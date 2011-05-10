@@ -47,11 +47,13 @@ class NotesTheme extends Themelet
 <!-- For AJAX functions -->
 <script type="text/javascript" src="$data_href/lib/shimmie.js"> </script>
 
+<!-- For common styles -->
+<link rel="stylesheet" type="text/css" href="$data_href/lib/ext_notes/ext_notes.css" />
+
 JS
 );
 		$string = <<<JS
-<!-- For common function and styles -->
-<link rel="stylesheet" type="text/css" href="$data_href/lib/ext_notes/ext_notes.css" />
+<!-- For common functions -->
 <script type="text/javascript" src="$data_href/lib/ext_notes/ext_notes.js"> </script>
 
 <script type="text/javascript">

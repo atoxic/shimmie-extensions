@@ -1,0 +1,34 @@
+table.stage_table
+{
+	border: 1px solid;
+	max-width: 1284px;
+	min-width: 1184px;
+}
+table.stage_table td
+{
+	border: 1px solid;
+	padding: 2px;
+	max-width: 100px;
+	min-width: 100px;
+}
+table.stage_table tr td:first-child
+{
+	max-width: 300px;
+	min-width: 300px;
+}
+div.image_link
+{
+	font-size: 18px;
+	margin: 5px;
+	padding: 2px;
+	border: 1px solid;
+	text-align: center;
+}
+div.image_link a
+{
+	padding: 2px 25px;
+}
+img.pv_thumb
+{
+	height: 80px;
+}

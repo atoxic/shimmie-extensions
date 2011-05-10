@@ -54,8 +54,9 @@ class SLExtTheme extends Themelet
 	private function cacheTableHeading($chap)
 	{
 		$chap = html_escape($chap);
+		$hashed = hash("md5", html_escape($chap));
 		$string = <<<HEADER
-<a href="#" class="cache_table_hide_link" id="$chap"><h1>$chap</h1></a><div class='stage_div' id="${chap}_div"><table class='stage_table' id="${chap}_table"><tr><td>Page</td>
+<a name="$hashed"><a href="javascript:;" class="cache_table_hide_link" id="$hashed"><h1>$chap</h1></a><div class='stage_div' id="${hashed}_div"><table class='stage_table' id="${hashed}_table"><tr><td>Page</td>
 HEADER;
 		foreach(SLExt::$stages as $stage)
 		{
@@ -70,43 +71,15 @@ HEADER;
 	{
 		$data_href = get_base_href();
 		
+		$page->add_header(<<<HTML
+<!-- For common styles -->
+<link rel="stylesheet" type="text/css" href="$data_href/lib/ext_slext/ext_slext.css" />
+HTML
+);
+		
 		$string = <<<HTML
-<style type="text/css">
-table.stage_table
-{
-	border: 1px solid;
-	max-width: 1184px;
-	min-width: 1184px;
-}
-table.stage_table td
-{
-	border: 1px solid;
-	padding: 2px;
-	max-width: 100px;
-	min-width: 100px;
-}
-table.stage_table tr td:first-child
-{
-	max-width: 200px;
-	min-width: 200px;
-}
-div.image_link
-{
-	font-size: 18px;
-	margin: 5px;
-	padding: 2px;
-	border: 1px solid;
-	text-align: center;
-}
-div.image_link a
-{
-	padding: 2px 30px;
-}
-img.pv_thumb
-{
-	height: 80px;
-}
-</style>
+<!-- For common functions -->
+<script type="text/javascript" src="$data_href/lib/ext_slext/ext_slext.js"> </script>
 HTML;
 		$prev_chap = null;
 		$cur_chap = null;
@@ -157,34 +130,6 @@ HTML;
 		}
 		$string .= <<<JS
 </table></div>
-<script>
-// <![CDATA[
-$(".cache_table_hide_link").click(function()
-{
-	var id = $(this).attr("id");
-	$("#" + id + "_div").slideToggle("slow", function()
-	{
-		if($("#" + id + "_div").is(":hidden"))
-		{
-			$.cookie("hide_cache_table_" + id, 'true', {path: '/'});
-		}
-		else
-		{
-			$.cookie("hide_cache_table_" + id, 'false', {path: '/'});
-		} 
-	});
-});
-
-$(".cache_table_hide_link").each(function()
-{
-	var id = $(this).attr("id");
-	if($.cookie("hide_cache_table_" + id) == 'true')
-	{
-		$("#" + id + "_div").hide();
-	} 
-});
-// ]]>
-</script>
 JS;
 		$page->set_title("Stage Progress");
 		$page->add_block(new Block("Stage Progress", $string));
