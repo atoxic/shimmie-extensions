@@ -58,7 +58,7 @@ JS
 shortcut.add("Alt+N",
 function()
 {
-	add_note_init($image_id, $permission);
+	add_note_init_center($image_id, $permission);
 });
 $("#main_image").dblclick(function(e)
 {
@@ -80,7 +80,7 @@ JS;
 		$string = <<<JS
 		
 <form>
-<input type="button" value="New Note" name="button1" onClick="javascript:add_note_init($image_id, $permission);">
+<input type="button" value="New Note" name="button1" onClick="javascript:add_note_init_center($image_id, $permission);">
 </form> 
 
 JS;
