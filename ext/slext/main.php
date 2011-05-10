@@ -71,6 +71,11 @@ class SLExt extends SimpleExtension
 		return(SLExt::getTag($regex, $tags));
 	}
 	
+	public static function getChapterFromPage($page_tag)
+	{
+		return(substr($page_tag, 0, strrpos($page_tag, "_")));
+	}
+	
 	// gets other versions of the same image (has same page tag) as array (or returns null)
 	public function getOtherVersions($image_id)
 	{
@@ -128,33 +133,34 @@ class SLExt extends SimpleExtension
 	{
 		global $database;
 		$table = $database->get_all("SELECT * FROM " . $this->db . " ORDER BY page, stage, image_id");
-		$cache = array();
-		$list = array();
-		$prev = null;
 		$row = null;
+		$cache = array();
+		$page_array = array();
+		$prev_page = null;
 		$prev_id = null;
 		foreach($table as $row)
 		{
-			if($prev != $row["page"])
+			if($prev_page != $row["page"])
 			{
-				if(isset($prev))
+				if(isset($prev_page))
 				{
 					// thumbnail is set to the last one by stage
-					$list["th_src"] = make_link("/thumb/" . $prev_id);
-					$list["th_id"] = $prev_id;
-					$cache[$prev] = $list;
-					$list = array();
+					$page_array["th_src"] = make_link("/thumb/" . $prev_id);
+					$page_array["th_id"] = $prev_id;
+					$cache[$prev_page] = $page_array;
+					
+					$page_array = array();
 				}
-				$prev = $row["page"];
+				$prev_page = $row["page"];
 			}
 			$prev_id = $row["image_id"];
-			if(!array_key_exists($row["stage"], $list))
-				$list[$row["stage"]] = array();
-			$list[$row["stage"]][] = $row["image_id"];
+			if(!array_key_exists($row["stage"], $page_array))
+				$page_array[$row["stage"]] = array();
+			$page_array[$row["stage"]][] = $row["image_id"];
 		}
-		$list["th_src"] = make_link("/thumb/" . $prev_id);
-		$list["th_id"] = $prev_id;
-		$cache[$prev] = $list;
+		$page_array["th_src"] = make_link("/thumb/" . $prev_id);
+		$page_array["th_id"] = $prev_id;
+		$cache[$prev_page] = $page_array;
 		return($cache);
 	}
 	

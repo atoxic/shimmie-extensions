@@ -51,24 +51,44 @@ class SLExtTheme extends Themelet
 		$this->display_error($page, "Stage Change Error", "Error: Could not change stages");
 	}
 	
+	private function cacheTableHeading($chap)
+	{
+		$chap = html_escape($chap);
+		$string = <<<HEADER
+<a href="#" class="cache_table_hide_link" id="$chap"><h1>$chap</h1></a><div class='stage_div' id="${chap}_div"><table class='stage_table' id="${chap}_table"><tr><td>Page</td>
+HEADER;
+		foreach(SLExt::$stages as $stage)
+		{
+			$string .= "<td>" . SLExtTheme::$stages_html[$stage] . "</td>";
+		}
+		$string .= "</tr>";
+		return($string);
+	}
+	
 	// displays stage progress from cache
 	public function displayStageProgessCache(Page $page, $array)
 	{
+		$data_href = get_base_href();
+		
 		$string = <<<HTML
 <style type="text/css">
-table.stage_table tr:first-child td
-{
-	max-width: 100px;
-	min-width: 100px;
-}
 table.stage_table
 {
 	border: 1px solid;
+	max-width: 1184px;
+	min-width: 1184px;
 }
 table.stage_table td
 {
 	border: 1px solid;
 	padding: 2px;
+	max-width: 100px;
+	min-width: 100px;
+}
+table.stage_table tr td:first-child
+{
+	max-width: 200px;
+	min-width: 200px;
 }
 div.image_link
 {
@@ -80,23 +100,29 @@ div.image_link
 }
 div.image_link a
 {
-	padding: 2px 40px;
-	//background: #ddddff;
+	padding: 2px 30px;
 }
 img.pv_thumb
 {
-	width: 80px;
+	height: 80px;
 }
 </style>
-<table class="stage_table"><tr><td>Page</td>
 HTML;
-		foreach(SLExt::$stages as $stage)
-		{
-			$string .= "<td>" . SLExtTheme::$stages_html[$stage] . "</td>";
-		}
-		$string .= "</tr>";
+		$prev_chap = null;
+		$cur_chap = null;
 		foreach($array as $page_tag => $list)
 		{
+			$cur_chap = SLExt::getChapterFromPage($page_tag);
+			if(!isset($prev_chap))
+			{
+				$string .= $this->cacheTableHeading($cur_chap);
+			}
+			else if($prev_chap != $cur_chap)
+			{
+				$string .= "</tr></table></div><br/><br/>" . $this->cacheTableHeading($cur_chap);
+			}
+			$prev_chap = $cur_chap;
+			
 			$thumb = $list["th_src"];
 			$th_link = make_link("post/view/" . $list["th_id"]);
 			$string .= "<tr><td>$page_tag<br/><a href='$th_link' target='_blank'><img class='pv_thumb' src='$thumb'></img></a></td>";
@@ -129,7 +155,37 @@ HTML;
 			}
 			$string .= "</tr>";
 		}
-		$string .= "</table>";
+		$string .= <<<JS
+</table></div>
+<script>
+// <![CDATA[
+$(".cache_table_hide_link").click(function()
+{
+	var id = $(this).attr("id");
+	$("#" + id + "_div").slideToggle("slow", function()
+	{
+		if($("#" + id + "_div").is(":hidden"))
+		{
+			$.cookie("hide_cache_table_" + id, 'true', {path: '/'});
+		}
+		else
+		{
+			$.cookie("hide_cache_table_" + id, 'false', {path: '/'});
+		} 
+	});
+});
+
+$(".cache_table_hide_link").each(function()
+{
+	var id = $(this).attr("id");
+	if($.cookie("hide_cache_table_" + id) == 'true')
+	{
+		$("#" + id + "_div").hide();
+	} 
+});
+// ]]>
+</script>
+JS;
 		$page->set_title("Stage Progress");
 		$page->add_block(new Block("Stage Progress", $string));
 	}

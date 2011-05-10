@@ -35,7 +35,7 @@ class NotesTheme extends Themelet
 		$permission = $this->userPermission($user);
 		$data_href = get_base_href();
 		
-		$string = <<<JS
+		$page->add_header(<<<JS
 
 <!-- For Photo Note GUI -->	
 <link rel="stylesheet" type="text/css" href="$data_href/lib/ext_notes/PhotoNotes.v1.css" />
@@ -47,18 +47,22 @@ class NotesTheme extends Themelet
 <!-- For AJAX functions -->
 <script type="text/javascript" src="$data_href/lib/shimmie.js"> </script>
 
+JS
+);
+		$string = <<<JS
 <!-- For common function and styles -->
 <link rel="stylesheet" type="text/css" href="$data_href/lib/ext_notes/ext_notes.css" />
 <script type="text/javascript" src="$data_href/lib/ext_notes/ext_notes.js"> </script>
 
 <script type="text/javascript">
+// <![CDATA[
 shortcut.add("Alt+N",
 function()
 {
 	add_note_init($image_id, $permission);
 });
+// ]]>
 </script>
-
 JS;
 		return($string);
 	}
@@ -102,7 +106,7 @@ JS;
 	
 		$string = <<<JS
 <script type="text/javascript">
-
+// <![CDATA[
 JS;
 		
 		foreach($notes as $note)
@@ -112,7 +116,7 @@ JS;
 		}
 		
 		$string .= <<<JS
-
+// ]]>
 </script>
 
 JS;
