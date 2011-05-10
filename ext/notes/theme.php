@@ -39,7 +39,7 @@ class NotesTheme extends Themelet
 
 <!-- For Photo Note GUI -->	
 <link rel="stylesheet" type="text/css" href="$data_href/lib/ext_notes/PhotoNotes.v1.css" />
-<script type="text/javascript" src="$data_href/lib/ext_notes/PhotoNotes.v1.js"> </script>
+<script type="text/javascript" src="$data_href/lib/ext_notes/PhotoNotes.v1.min.js"> </script>
 
 <!-- For Shortcuts -->	
 <script type="text/javascript" src="$data_href/lib/ext_notes/shortcut.js"> </script>

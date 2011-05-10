@@ -32,3 +32,14 @@ img.pv_thumb
 {
 	height: 80px;
 }
+
+table.management td
+{
+	vertical-align: middle;
+	border: 1px solid; 
+	padding: 10px;
+}
+table.management input
+{
+	margin: 3px;
+}

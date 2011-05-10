@@ -66,8 +66,7 @@ HEADER;
 		return($string);
 	}
 	
-	// displays stage progress from cache
-	public function displayStageProgessCache(Page $page, $array)
+	private function common(Page $page)
 	{
 		$data_href = get_base_href();
 		
@@ -76,6 +75,14 @@ HEADER;
 <link rel="stylesheet" type="text/css" href="$data_href/lib/ext_slext/ext_slext.css" />
 HTML
 );
+	}
+	
+	// displays stage progress from cache
+	public function displayStageProgessCache(Page $page, $array)
+	{
+		$this->common($page);
+		
+		$data_href = get_base_href();
 		
 		$string = <<<HTML
 <!-- For common functions -->
@@ -192,19 +199,9 @@ HTML;
 		$stage = SLExt::getTag('/stage_.+/', $tags);
 		if(is_null($stage))
 			return;
+		
+		$this->common($page);
 		$string = <<<HTML
-<style type="text/css">
-table.management td
-{
-	vertical-align: middle;
-	border: 1px solid; 
-	padding: 10px;
-}
-table.management input
-{
-	margin: 3px;
-}
-</style>
 <table style='border: 1px solid; height: 100px;' class='management'><tr style='font-weight: bold;'><td>Stage: 
 HTML;
 		
