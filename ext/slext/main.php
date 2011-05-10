@@ -281,6 +281,34 @@ class SLExt extends SimpleExtension
 			$this->initProgressCache();
 			$this->theme->displayStageProgessCacheInit($page);
 		}
+		else if($event->page_matches("stage_dl"))
+		{
+			if(!$user->is_admin())
+			{
+				$this->theme->display_permission_denied($page);
+				return;
+			}
+			
+			global $database;
+			
+			$pages = $database->get_all("SELECT * FROM " . $this->db . " GROUP BY image_id ORDER BY stage DESC, image_id");
+			
+			$phar_fn = 'stage_dl.phar';
+			unlink($phar_fn . ".zip");
+			$p = new Phar($phar_fn, 0, $phar_fn);
+			$p = $p->convertToExecutable(Phar::ZIP);
+			$p->startBuffering();
+			foreach($pages as $page_rec)
+			{
+				$img = Image::by_id($page_rec["image_id"]);
+				$filename = $page_rec["page"] . "." . $img->get_ext();
+				$p[$filename] = file_get_contents($img->get_image_filename());
+				$p[$filename]->setMetaData(array('mime-type' => $img->get_mime_type()));
+			}
+			$p->stopBuffering();
+			
+			$this->theme->displayStageProgessCacheInit($page);
+		}
 		else if($event->page_matches("stage_change"))
 		{
 			if($user->is_anonymous())
