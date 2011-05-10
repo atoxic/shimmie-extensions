@@ -227,8 +227,9 @@ class Notes extends SimpleExtension
 			// viewing an image
 			if($event->count_args() == 2 && $event->get_arg(0) == "view")
 			{
-				$notes = $this->getNotes($event->get_arg(1));
-				$this->theme->displayNotes($page, $user, $notes, $event->get_arg(1));
+				$id = int_escape($event->get_arg(1));
+				$notes = $this->getNotes($id);
+				$this->theme->displayNotes($page, $user, $notes, $id);
 			}
 		}
 		else if($event->page_matches("note_history"))
@@ -237,8 +238,9 @@ class Notes extends SimpleExtension
 			{
 				$page->set_title("Note History");
 				
-				$notes = $this->getNoteHistory($event->get_arg(0));
-				$this->theme->displayNoteHistory($page, $user, $notes, $event->get_arg(0));
+				$id = int_escape($event->get_arg(0));
+				$notes = $this->getNoteHistory($id);
+				$this->theme->displayNoteHistory($page, $user, $notes, $id);
 			}
 		}
 		else if($event->page_matches("note_add"))

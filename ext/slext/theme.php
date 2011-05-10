@@ -51,12 +51,18 @@ class SLExtTheme extends Themelet
 		$this->display_error($page, "Stage Change Error", "Error: Could not change stages");
 	}
 	
-	private function cacheTableHeading($chap)
+	private function cacheTableHeading($chap, $pools)
 	{
+		$pool_html = "";
+		if(isset($pools[$chap]))
+			$pool_html = "<a href='" . make_link("pool/view/" . $pools[$chap]) . "'><h3>View Pool</h3></a>";
+		
 		$chap = html_escape($chap);
 		$hashed = hash("md5", html_escape($chap));
 		$string = <<<HEADER
-<a name="$hashed"><a href="javascript:;" class="cache_table_hide_link" id="$hashed"><h1>$chap</h1></a><div class='stage_div' id="${hashed}_div"><table class='stage_table' id="${hashed}_table"><tr><td>Page</td>
+<a name="$hashed"><a href="javascript:;" class="cache_table_hide_link" id="$hashed"><h1>$chap</h1></a>
+$pool_html
+<div class='stage_div' id="${hashed}_div"><table class='stage_table' id="${hashed}_table"><tr><td>Page</td>
 HEADER;
 		foreach(SLExt::$stages as $stage)
 		{
@@ -78,7 +84,7 @@ HTML
 	}
 	
 	// displays stage progress from cache
-	public function displayStageProgessCache(Page $page, $array)
+	public function displayStageProgessCache(Page $page, $cache)
 	{
 		$this->common($page);
 		
@@ -90,16 +96,16 @@ HTML
 HTML;
 		$prev_chap = null;
 		$cur_chap = null;
-		foreach($array as $page_tag => $list)
+		foreach($cache["pages"] as $page_tag => $list)
 		{
 			$cur_chap = SLExt::getChapterFromPage($page_tag);
 			if(!isset($prev_chap))
 			{
-				$string .= $this->cacheTableHeading($cur_chap);
+				$string .= $this->cacheTableHeading($cur_chap, $cache["pools"]);
 			}
 			else if($prev_chap != $cur_chap)
 			{
-				$string .= "</tr></table></div><br/><br/>" . $this->cacheTableHeading($cur_chap);
+				$string .= "</tr></table></div><br/><br/>" . $this->cacheTableHeading($cur_chap, $cache["pools"]);
 			}
 			$prev_chap = $cur_chap;
 			

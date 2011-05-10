@@ -122,7 +122,7 @@ class SLExt extends SimpleExtension
 				$chapters[$chapter]['id'] = $this->add_pool($chapter);
 				$chapters[$chapter]['count'] = 0;
 			}
-			$database->execute("INSERT INTO pool_images (pool_id, image_id, image_order) VALUES (?, (SELECT image_id FROM " . $this->db . " WHERE page=? ORDER BY stage DESC, id LIMIT 1), ?)",
+			$database->execute("INSERT INTO pool_images (pool_id, image_id, image_order) VALUES (?, (SELECT image_id FROM " . $this->db . " WHERE page=? ORDER BY stage DESC, image_id LIMIT 1), ?)",
 							array($chapters[$chapter]['id'], $page['page'], substr($page['page'], strrpos($page['page'], "_") + 1)));
 			$chapters[$chapter]['count']++;
 		}
@@ -150,14 +150,15 @@ class SLExt extends SimpleExtension
 	
 	/* Fetches the progress cache
 	 * Returned data structure:
-	 * array of page to (array of stage to (array of image_id))
+	 * "pools" => array of pool title to id
+	 * "pages" => array of page to (array of stage to (array of image_id))
 	 */
 	public function getProgressCache()
 	{
 		global $database;
 		$table = $database->get_all("SELECT * FROM " . $this->db . " ORDER BY page, stage, image_id");
 		$row = null;
-		$cache = array();
+		$pages = array();
 		$page_array = array();
 		$prev_page = null;
 		$prev_id = null;
@@ -170,7 +171,7 @@ class SLExt extends SimpleExtension
 					// thumbnail is set to the last one by stage
 					$page_array["th_src"] = make_link("/thumb/" . $prev_id);
 					$page_array["th_id"] = $prev_id;
-					$cache[$prev_page] = $page_array;
+					$pages[$prev_page] = $page_array;
 					
 					$page_array = array();
 				}
@@ -183,7 +184,24 @@ class SLExt extends SimpleExtension
 		}
 		$page_array["th_src"] = make_link("/thumb/" . $prev_id);
 		$page_array["th_id"] = $prev_id;
-		$cache[$prev_page] = $page_array;
+		$pages[$prev_page] = $page_array;
+		
+		// ===================
+		// get pools
+		// ===================
+		$pools_db = $database->get_all("SELECT id, title FROM pools");
+		$pools = array();
+		foreach($pools_db as $pool)
+		{
+			$pools[$pool["title"]] = $pool["id"];
+		}
+		
+		// ===================
+		// finish up
+		// ===================
+		$cache = array();
+		$cache["pages"] = $pages;
+		$cache["pools"] = $pools;
 		return($cache);
 	}
 	
