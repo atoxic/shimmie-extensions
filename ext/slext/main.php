@@ -138,7 +138,7 @@ class SLExt extends SimpleExtension
 		
 		foreach($chapters as $chapter => $attr)
 		{
-			$database->execute("UPDATE pools SET posts=? WHERE id=?", array($attr['count'], $attr['id']));
+			$database->execute("UPDATE pools SET posts=?, description=? WHERE id=?", array($attr['count'], "Automatically generated from the latest stages of $chapter on " . date('F jS\, Y h:i:s A'), $attr['id']));
 		}
 	}
 	
@@ -464,7 +464,7 @@ class SLExt extends SimpleExtension
 		$database->execute("
 				INSERT INTO pools (user_id, public, title, description, date)
 				VALUES (?, ?, ?, ?, now())",
-				array($user->id, $public, $pool, "Automatically generated from the latest stages of $pool"));
+				array($user->id, $public, $pool, "Automatically generated from the latest stages of $pool on " . date('F jS\, Y h:i:s A')));
 
 		$result = $database->get_row("SELECT LAST_INSERT_ID() AS poolID"); # FIXME database specific?
 
