@@ -172,7 +172,9 @@ HTML;
 		foreach($table as $key => $value)
 		{
 			$string .= <<<HTML
-<input type="radio" name="stage" value="$key" />$value<br />
+<label for="sctable_$key">
+<input id="sctable_$key" type="radio" name="stage" value="$key" />$value
+</label><br />
 HTML;
 		}
 		$string .= <<<HTML
@@ -232,9 +234,9 @@ HTML;
 			$form
 				<input type='hidden' name='image_id' value='$image_id' />
 				File: <input accept='image/jpeg,image/png,image/gif' size='10' id='file' name='file' type='file'><br/>
-				<input type="radio" name="stage" value="stage_raw" />Raw<br />
-				<input type="radio" name="stage" value="stage_clean" />Cleaned<br />
-				<input type="radio" name="stage" value="stage_ts" />Typesetted<br />
+				<label for="sutable_raw">	<input id="sutable_raw" type="radio" name="stage" value="stage_raw" />		Raw			</label><br />
+				<label for="sutable_clean">	<input id="sutable_clean" type="radio" name="stage" value="stage_clean" />	Cleaned		</label><br />
+				<label for="sutable_ts">	<input id="sutable_ts" type="radio" name="stage" value="stage_ts" />		Typesetted	</label><br />
 				<input type='submit' value='Post'>
 			</form>
 			</td>
