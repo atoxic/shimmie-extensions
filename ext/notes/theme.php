@@ -111,6 +111,7 @@ JS;
 		$string = <<<JS
 <script type="text/javascript">
 // <![CDATA[
+
 JS;
 		
 		foreach($notes as $note)
