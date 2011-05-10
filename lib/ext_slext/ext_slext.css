@@ -43,3 +43,16 @@ table.management input
 {
 	margin: 3px;
 }
+
+.cache_table_hide_link
+{
+	font-size: 36px;
+	font-weight: bold;
+}
+
+.view_pool
+{
+	font-size: 18px;
+	font-weight: bold;
+	margin-left: 200px;
+}

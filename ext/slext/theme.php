@@ -55,12 +55,12 @@ class SLExtTheme extends Themelet
 	{
 		$pool_html = "";
 		if(isset($pools[$chap]))
-			$pool_html = "<a href='" . make_link("pool/view/" . $pools[$chap]) . "'><h3>View Pool</h3></a>";
+			$pool_html = "<a class='view_pool' href='" . make_link("pool/view/" . $pools[$chap]) . "'>View Pool</a>";
 		
 		$chap = html_escape($chap);
 		$hashed = hash("md5", html_escape($chap));
 		$string = <<<HEADER
-<a name="$hashed"><a href="javascript:;" class="cache_table_hide_link" id="$hashed"><h1>$chap</h1></a>
+<a name="$hashed"><a href="javascript:;" class="cache_table_hide_link" id="$hashed">$chap</a>
 $pool_html
 <div class='stage_div' id="${hashed}_div"><table class='stage_table' id="${hashed}_table"><tr><td>Page</td>
 HEADER;
