@@ -117,10 +117,19 @@ class SLExt extends SimpleExtension
 			$chapter = SLExt::getChapterFromPage($page['page']);
 			if(!isset($chapters[$chapter]))
 			{
-				$database->execute("DELETE FROM pools WHERE title=?", array($chapter));
 				$chapters[$chapter] = array();
-				$chapters[$chapter]['id'] = $this->add_pool($chapter);
 				$chapters[$chapter]['count'] = 0;
+				$id = $database->get_row("SELECT id FROM pools WHERE title=?", array($chapter));
+				if(isset($id) && isset($id["id"]))
+				{
+					$id = $id["id"];
+					$database->execute("DELETE FROM pool_images WHERE pool_id=?", array($id));
+					$chapters[$chapter]['id'] = $id;
+				}
+				else
+				{
+					$chapters[$chapter]['id'] = $this->add_pool($chapter);
+				}
 			}
 			$database->execute("INSERT INTO pool_images (pool_id, image_id, image_order) VALUES (?, (SELECT image_id FROM " . $this->db . " WHERE page=? ORDER BY stage DESC, image_id LIMIT 1), ?)",
 							array($chapters[$chapter]['id'], $page['page'], substr($page['page'], strrpos($page['page'], "_") + 1)));
