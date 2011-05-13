@@ -119,6 +119,13 @@
 #image-annotate-edit-form a:hover {
     background-color: #eee;
 }
+#image-annotate-edit-form a.disabled {
+    opacity: 0.5;
+	cursor: default;
+}
+#image-annotate-edit-form a.disabled:hover {
+    background-color: #fff;
+}
 .image-annotate-edit-area {
     border: 1px solid black;
     cursor: move;
@@ -143,6 +150,9 @@
 }
 .image-annotate-edit-close {
     background-image: url(images/cross.png);
+}
+.image-annotate-edit-history {
+    background-image: url(images/history.png);
 }
 .ui-resizable {
     position: relative;

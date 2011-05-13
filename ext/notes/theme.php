@@ -65,6 +65,7 @@ function()
 $.preLoadImages("$data_href/lib/ext_notes/images/accept.png",
 				"$data_href/lib/ext_notes/images/asterisk_yellow.png",
 				"$data_href/lib/ext_notes/images/cross.png",
+				"$data_href/lib/ext_notes/images/history.png",
 				"$data_href/lib/ext_notes/images/delete.png");
 // ]]>
 </script>
@@ -123,6 +124,7 @@ $(window).load(function()
 			addUrl: "$add_link",
 			saveUrl: "$change_link",
 			deleteUrl: "$remove_link",
+			permission: $permission,
 			editable: true,
 			useAjax: true,
 			notes: [
