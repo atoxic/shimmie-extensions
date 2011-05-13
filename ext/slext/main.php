@@ -291,7 +291,7 @@ class SLExt extends SimpleExtension
 			
 			global $database;
 			
-			$pages = $database->get_all("SELECT * FROM " . $this->db . " GROUP BY image_id ORDER BY stage DESC, image_id");
+			$pages = $database->get_all("SELECT * FROM " . $this->db . " GROUP BY page ORDER BY stage DESC, image_id");
 			
 			if(phpversion('phar'))
 			{
