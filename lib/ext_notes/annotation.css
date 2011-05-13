@@ -23,6 +23,12 @@
     background-repeat: no-repeat;
     margin: 0;
     position: relative;
+	display: inline-block;
+	margin-right: 300px;
+}
+.image-annotate-canvas img {
+	position: absolute;
+	z-index: 1;
 }
 .image-annotate-area {
     border: 1px solid #000000;
