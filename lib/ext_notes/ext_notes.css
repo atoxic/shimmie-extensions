@@ -4,30 +4,6 @@
 	position: relative;
 	display: inline-block;
 }
-#main_image
-{
-	margin-right: 30px;
-	margin-bottom: 20px;
-}
-.fn-area-inner
-{
-	opacity: 0.5;
-}
-.fn-note textarea
-{
-	height: 100px;
-	min-width: 295px;
-	max-width: 295px;
-}
-.fn-note-edit
-{
-	min-width: 307px;
-	max-width: 307px;
-}
-.fn-note-text
-{
-	font-size: 10pt;
-}
 
 /* styles for advanced view */
 .note_div span
@@ -43,36 +19,36 @@
 	display: inline-block;
 	margin-right: 10px;
 }
-*[name="text"]
+.note_div  *[name="text"]
 {
 	width: 300px !important;
 }
-textarea[name="text"]
+.note_div textarea[name="text"]
 {
 	font-size: 14px;
 	width: 296px !important;
 }
-*[name="date"]
+.note_div *[name="date"]
 {
 	width: 155px !important;
 }
-input[name="date"]
+.note_div input[name="date"]
 {
 	width: 151px !important;
 }
-*[name="group"]
+.note_div *[name="group"]
 {
 	width: 100px !important;
 }
-input[name="group"]
+.note_div input[name="group"]
 {
 	width: 96px !important;
 }
-*[name="pos"], *[name="dim"]
+.note_div  *[name="pos"], .note_div  *[name="dim"]
 {
 	width: 150px !important;
 }
-input[name="save"]
+.note_div  input[name="save"]
 {
 	width: 50px !important;
 }

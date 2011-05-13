@@ -37,10 +37,6 @@ class NotesTheme extends Themelet
 		
 		$page->add_header(<<<JS
 
-<!-- For Photo Note GUI -->	
-<link rel="stylesheet" type="text/css" href="$data_href/lib/ext_notes/PhotoNotes.v1.css" />
-<script type="text/javascript" src="$data_href/lib/ext_notes/PhotoNotes.v1.js"> </script>
-
 <!-- For Shortcuts -->	
 <script type="text/javascript" src="$data_href/lib/ext_notes/shortcut.js"> </script>
 
@@ -52,6 +48,7 @@ JS
 		$string = <<<JS
 <!-- For Annotation -->	
 <link rel="stylesheet" type="text/css" href="$data_href/lib/ext_notes/annotation.css" />
+<script type="text/javascript" src="$data_href/lib/ext_notes/jquery-ui-1.8.12.min.js"> </script>
 <script type="text/javascript" src="$data_href/lib/ext_notes/jquery.annotate.js"> </script>
 
 <!-- For common functions -->
@@ -111,15 +108,20 @@ JS;
 	public function generateNotes(Page $page, User $user, $notes, $image_id)
 	{
 		$permission = $this->userPermission($user);
-	
+		
+		$change_link = make_link("note_change");
+		$remove_link = make_link("note_remove");
+		
 		$string = <<<JS
 <script type="text/javascript">
 // <![CDATA[
 
 $(window).load(function() {
 				$("#Imagemain").annotateImage({
+					saveUrl: "$change_link",
+					deleteUrl: "$remove_link",
 					editable: true,
-					useAjax: false,
+					useAjax: true,
 					notes: [
 JS;
 		
