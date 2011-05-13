@@ -32,6 +32,7 @@
 .image-annotate-area {
     border: 1px solid #000000;
     position: absolute;
+	background: rgba(255, 255, 225, 0.4);
 }
 .image-annotate-area div {
     border: 1px solid #FFFFFF;

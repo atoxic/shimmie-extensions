@@ -59,9 +59,13 @@ JS
 shortcut.add("Alt+N",
 function()
 {
-	add_note_init_center($image_id);
+	$.add_note_init_center($image_id);
 });
 
+$.preLoadImages("$data_href/lib/ext_notes/images/accept.png",
+				"$data_href/lib/ext_notes/images/asterisk_yellow.png",
+				"$data_href/lib/ext_notes/images/cross.png",
+				"$data_href/lib/ext_notes/images/delete.png");
 // ]]>
 </script>
 JS;
@@ -77,7 +81,7 @@ JS;
 		$string = <<<JS
 		
 <form>
-<input type="button" value="New Note" name="button1" onClick="javascript:add_note_init_center($image_id, $permission);">
+<input type="button" value="New Note" name="button1" onClick="javascript:$.add_note_init_center($image_id, $permission);">
 </form> 
 
 JS;
@@ -150,7 +154,7 @@ JS;
 	$(".image-annotate-view").dblclick(function(e)
 	{
 		var offset = $(".image-annotate-view").offset();
-		add_note_init($image_id, e.pageX - offset.left, e.pageY - offset.top);
+		$.add_note_init($image_id, e.pageX - offset.left, e.pageY - offset.top);
 	});
 });
 			
