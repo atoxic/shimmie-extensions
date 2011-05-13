@@ -154,9 +154,9 @@ JS;
 		});
 	$("#Imagemain").data("annotations", annotations);
 	
-	$(".image-annotate-view").dblclick(function(e)
+	$("#main_image").dblclick(function(e)
 	{
-		var offset = $(".image-annotate-view").offset();
+		var offset = $("#main_image").offset();
 		$.add_note_init($image_id, e.pageX - offset.left, e.pageY - offset.top);
 	});
 });
