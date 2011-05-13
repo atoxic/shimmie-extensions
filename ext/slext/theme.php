@@ -40,6 +40,17 @@ class SLExtTheme extends Themelet
 		$this->display_error($page, "Error fetching versions", "Error: Could not get versions of the image specified");
 	}
 	
+	public function displayStageDLError(Page $page)
+	{
+		$this->display_error($page, "Error generating stage DL", "Error: Could not generate the stage DL");
+	}
+	
+	public function displayStageDL(Page $page)
+	{
+		$page->set_title("Stage Download Generated");
+		$page->add_block(new Block("Stage DL Generated", "Stage DL Generated."));
+	}
+	
 	public function displayStageProgessCacheInit(Page $page)
 	{
 		$page->set_title("Stage Progress Cache Initialized");

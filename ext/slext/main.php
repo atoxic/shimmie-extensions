@@ -293,21 +293,39 @@ class SLExt extends SimpleExtension
 			
 			$pages = $database->get_all("SELECT * FROM " . $this->db . " GROUP BY image_id ORDER BY stage DESC, image_id");
 			
-			$phar_fn = 'stage_dl.phar';
-			unlink($phar_fn . ".zip");
-			$p = new Phar($phar_fn, 0, $phar_fn);
-			$p = $p->convertToExecutable(Phar::ZIP);
-			$p->startBuffering();
-			foreach($pages as $page_rec)
+			if(phpversion('phar'))
 			{
-				$img = Image::by_id($page_rec["image_id"]);
-				$filename = $page_rec["page"] . "." . $img->get_ext();
-				$p[$filename] = file_get_contents($img->get_image_filename());
-				$p[$filename]->setMetaData(array('mime-type' => $img->get_mime_type()));
+				$phar_fn = 'stage_dl';
+				unlink($phar_fn);
+				unlink($phar_fn . ".zip");
+				$p = new Phar($phar_fn, 0, $phar_fn);
+				$p = $p->convertToExecutable(Phar::ZIP);
+				$p->startBuffering();
+				foreach($pages as $page_rec)
+				{
+					$img = Image::by_id($page_rec["image_id"]);
+					$filename = $page_rec["page"] . "." . $img->get_ext();
+					$p[$filename] = file_get_contents($img->get_image_filename());
+					$p[$filename]->setMetaData(array('mime-type' => $img->get_mime_type()));
+				}
+				$p->stopBuffering();
 			}
-			$p->stopBuffering();
+			else
+			{
+				$dir = 'stage_dl';
+				if(file_exists($dir) && !is_dir($dir))
+					unlink($dir);
+				if(!is_dir($dir) && !mkdir($dir))
+					$this->theme->displayStageDLError($page);
+				foreach($pages as $page_rec)
+				{
+					$img = Image::by_id($page_rec["image_id"]);
+					$filename = $dir . "/" . $page_rec["page"] . "." . $img->get_ext();
+					copy($img->get_image_filename(), $filename);
+				}
+			}
 			
-			$this->theme->displayStageProgessCacheInit($page);
+			$this->theme->displayStageDL($page);
 		}
 		else if($event->page_matches("stage_change"))
 		{
