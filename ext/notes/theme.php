@@ -116,13 +116,14 @@ JS;
 <script type="text/javascript">
 // <![CDATA[
 
-$(window).load(function() {
-				$("#Imagemain").annotateImage({
-					saveUrl: "$change_link",
-					deleteUrl: "$remove_link",
-					editable: true,
-					useAjax: true,
-					notes: [
+$(window).load(function()
+{
+	$("#Imagemain").annotateImage({
+			saveUrl: "$change_link",
+			deleteUrl: "$remove_link",
+			editable: true,
+			useAjax: true,
+			notes: [
 JS;
 		
 		foreach($notes as $note)
@@ -141,8 +142,8 @@ JS;
 		}
 		
 		$string .= <<<JS
-		]
-	});
+			]
+		});
 });
 			
 // ]]>
