@@ -6,6 +6,12 @@
 	margin-right: 300px;
 }
 
+#main_image
+{
+	position: absolute;
+	z-index: 1;
+}
+
 /* styles for advanced view */
 .note_div span
 {

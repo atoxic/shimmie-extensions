@@ -127,6 +127,7 @@ $(window).load(function()
 			permission: $permission,
 			editable: true,
 			useAjax: true,
+			redirect: $("#main_image"),
 			notes: [
 JS;
 		
