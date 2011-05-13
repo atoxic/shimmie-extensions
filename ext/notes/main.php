@@ -247,14 +247,14 @@ class Notes extends SimpleExtension
 		{
 			$page->set_mode("data");
 			if(!$user->is_anonymous() &&
-				array_key_exists("image_id", $_POST) &&
-				array_key_exists("x", $_POST) &&
-				array_key_exists("y", $_POST) &&
-				array_key_exists("w", $_POST) &&
-				array_key_exists("h", $_POST) &&
+				array_key_exists("id", $_POST) &&
+				array_key_exists("left", $_POST) &&
+				array_key_exists("top", $_POST) &&
+				array_key_exists("width", $_POST) &&
+				array_key_exists("top", $_POST) &&
 				array_key_exists("text", $_POST))
 			{
-				$id = $this->addNote($_POST["text"], $user->id, $_POST["x"], $_POST["y"], $_POST["w"], $_POST["h"], $_POST["image_id"]);
+				$id = $this->addNote($_POST["text"], $user->id, $_POST["left"], $_POST["top"], $_POST["width"], $_POST["height"], $_POST["id"]);
 				$page->set_data($id);
 			}
 			else

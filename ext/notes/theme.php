@@ -59,13 +59,9 @@ JS
 shortcut.add("Alt+N",
 function()
 {
-	add_note_init_center($image_id, $permission);
+	add_note_init_center($image_id);
 });
-$("#main_image").dblclick(function(e)
-{
-	var offset = $("#main_image").offset();
-	add_note_init($image_id, $permission, e.pageX - offset.left, e.pageY - offset.top);
-});
+
 // ]]>
 </script>
 JS;
@@ -109,6 +105,7 @@ JS;
 	{
 		$permission = $this->userPermission($user);
 		
+		$add_link = make_link("note_add");
 		$change_link = make_link("note_change");
 		$remove_link = make_link("note_remove");
 		
@@ -118,7 +115,8 @@ JS;
 
 $(window).load(function()
 {
-	$("#Imagemain").annotateImage({
+	var annotations = new $("#Imagemain").annotateImage({
+			addUrl: "$add_link",
 			saveUrl: "$change_link",
 			deleteUrl: "$remove_link",
 			editable: true,
@@ -130,13 +128,16 @@ JS;
 		{
 			$text = json_encode($note["text"]);
 			$string .= <<<JS
-				{ "top": $note[y],
-				   "left": $note[x],
-				   "width": $note[w],
-				   "height": $note[h],
-				   "text": $text,
-				   "id": "$note[id]",
-				   "editable": true } ,
+				{
+					"top": $note[y],
+					"left": $note[x],
+					"width": $note[w],
+					"height": $note[h],
+					"text": $text,
+					"id": "$note[id]",
+					"editable": true,
+					"new_note": false
+				},
 JS;
 			//$string .= "add_note($note[id], $text, $note[x], $note[y], $note[w], $note[h], $permission);\n";
 		}
@@ -144,6 +145,13 @@ JS;
 		$string .= <<<JS
 			]
 		});
+	$("#Imagemain").data("annotations", annotations);
+	
+	$(".image-annotate-view").dblclick(function(e)
+	{
+		var offset = $(".image-annotate-view").offset();
+		add_note_init($image_id, e.pageX - offset.left, e.pageY - offset.top);
+	});
 });
 			
 // ]]>
