@@ -23,11 +23,6 @@
     background-repeat: no-repeat;
     margin: 0;
     position: relative;
-	z-index: -2;
-}
-.image-annotate-view {
-    display: none;
-    position: relative;
 }
 .image-annotate-area {
     border: 1px solid #000000;
