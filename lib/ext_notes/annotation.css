@@ -130,6 +130,7 @@
     position: absolute;
     top: 10px;
     width: 60px;
+	background: rgba(255, 255, 225, 0.4);
 }
 .image-annotate-edit-area .ui-resizable-handle {
     opacity: 0.8;
