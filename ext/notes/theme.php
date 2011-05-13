@@ -39,7 +39,7 @@ class NotesTheme extends Themelet
 
 <!-- For Photo Note GUI -->	
 <link rel="stylesheet" type="text/css" href="$data_href/lib/ext_notes/PhotoNotes.v1.css" />
-<script type="text/javascript" src="$data_href/lib/ext_notes/PhotoNotes.v1.min.js"> </script>
+<script type="text/javascript" src="$data_href/lib/ext_notes/PhotoNotes.v1.js"> </script>
 
 <!-- For Shortcuts -->	
 <script type="text/javascript" src="$data_href/lib/ext_notes/shortcut.js"> </script>
@@ -50,6 +50,10 @@ class NotesTheme extends Themelet
 JS
 );
 		$string = <<<JS
+<!-- For Annotation -->	
+<link rel="stylesheet" type="text/css" href="$data_href/lib/ext_notes/annotation.css" />
+<script type="text/javascript" src="$data_href/lib/ext_notes/jquery.annotate.js"> </script>
+
 <!-- For common functions -->
 <script type="text/javascript" src="$data_href/lib/ext_notes/ext_notes.js"> </script>
 
@@ -112,15 +116,33 @@ JS;
 <script type="text/javascript">
 // <![CDATA[
 
+$(window).load(function() {
+				$("#Imagemain").annotateImage({
+					editable: true,
+					useAjax: false,
+					notes: [
 JS;
 		
 		foreach($notes as $note)
 		{
 			$text = json_encode($note["text"]);
-			$string .= "add_note($note[id], $text, $note[x], $note[y], $note[w], $note[h], $permission);\n";
+			$string .= <<<JS
+				{ "top": $note[y],
+				   "left": $note[x],
+				   "width": $note[w],
+				   "height": $note[h],
+				   "text": $text,
+				   "id": "$note[id]",
+				   "editable": true } ,
+JS;
+			//$string .= "add_note($note[id], $text, $note[x], $note[y], $note[w], $note[h], $permission);\n";
 		}
 		
 		$string .= <<<JS
+		]
+	});
+});
+			
 // ]]>
 </script>
 
