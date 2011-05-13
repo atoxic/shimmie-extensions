@@ -70,7 +70,7 @@
     height: 128px;
     padding: 7px;
     position: absolute;
-    width: 352px;
+    width: 327px;
 }
 #image-annotate-edit-form form {
     clear: right;
@@ -88,7 +88,8 @@
     height: 100px;
     font-family: Verdana, Sans-Serif;
     font-size: 12px;    
-    width: 348px;
+    width: 323px;
+    max-width: 323px;
 }
 #image-annotate-edit-form fieldset {
     background: transparent none repeat scroll 0 0;
