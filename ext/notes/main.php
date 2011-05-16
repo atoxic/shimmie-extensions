@@ -303,7 +303,7 @@ class Notes extends SimpleExtension
 	public function onNoteDisplay(NoteDisplayEvent $event)
 	{
 		global $page, $user;
-		$this->theme->displayNotes($page, $user, $this->getNotes($event->image_id), $event->image_id);
+		$this->theme->displayNotes($page, $user, $this->getNotes($event->image_id), $event->image_id, false);
 	}
 }
 ?>

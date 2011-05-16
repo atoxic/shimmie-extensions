@@ -9,11 +9,11 @@ class NotesTheme extends Themelet
 		$page->add_block(new Block("Note History", $this->generateCommon($page, $user, $notes, $image_id) . 
 													$this->generateAdvanced($page, $user, $notes, $image_id)));
 	}
-	public function displayNotes(Page $page, User $user, $notes, $image_id)
+	public function displayNotes(Page $page, User $user, $notes, $image_id, $shortcuts = true)
 	{
-		$main_block = $this->generateCommon($page, $user, $notes, $image_id). 
-						$this->generateNotes($page, $user, $notes, $image_id);
-		if(!$user->is_anonymous())
+		$main_block = $this->generateCommon($page, $user, $notes, $image_id, $shortcuts). 
+						$this->generateNotes($page, $user, $notes, $image_id, $shortcuts);
+		if(!$user->is_anonymous() && $shortcuts)
 			$main_block .= $this->generateFloatingControls($page, $user, $notes, $image_id);
 		$page->add_block(new Block("", $main_block, "main"));
 	}
@@ -30,7 +30,7 @@ class NotesTheme extends Themelet
 	/*
 		Common JS code and CSS styles
 	*/
-	public function generateCommon(Page $page, User $user, $notes, $image_id)
+	public function generateCommon(Page $page, User $user, $notes, $image_id, $shortcuts)
 	{
 		$permission = $this->userPermission($user);
 		$data_href = get_base_href();
@@ -53,7 +53,18 @@ JS
 
 <!-- For common functions -->
 <script type="text/javascript" src="$data_href/lib/ext_notes/ext_notes.js"> </script>
-
+<script type="text/javascript">
+// <![CDATA[
+$.preLoadImages("$data_href/lib/ext_notes/images/accept.png",
+				"$data_href/lib/ext_notes/images/asterisk_yellow.png",
+				"$data_href/lib/ext_notes/images/cross.png",
+				"$data_href/lib/ext_notes/images/history.png",
+				"$data_href/lib/ext_notes/images/delete.png");
+// ]]>
+</script>
+JS;
+		if($shortcuts)
+			$string .= <<<JS
 <script type="text/javascript">
 // <![CDATA[
 shortcut.add("Alt+N",
@@ -61,12 +72,6 @@ function()
 {
 	$.add_note_init_center($image_id);
 });
-
-$.preLoadImages("$data_href/lib/ext_notes/images/accept.png",
-				"$data_href/lib/ext_notes/images/asterisk_yellow.png",
-				"$data_href/lib/ext_notes/images/cross.png",
-				"$data_href/lib/ext_notes/images/history.png",
-				"$data_href/lib/ext_notes/images/delete.png");
 // ]]>
 </script>
 JS;
@@ -106,7 +111,7 @@ JS;
 	/*
 		Normal view with photo notes
 	 */
-	public function generateNotes(Page $page, User $user, $notes, $image_id)
+	public function generateNotes(Page $page, User $user, $notes, $image_id, $shortcuts)
 	{
 		$permission = $this->userPermission($user);
 		
@@ -153,7 +158,15 @@ JS;
 			]
 		});
 	$("#Imagemain").data("annotations", annotations);
-	
+// ]]>
+</script>
+
+JS;
+		if($shortcuts)
+			$string .= <<<JS
+			
+<script type="text/javascript">
+// <![CDATA[
 	$("#main_image").dblclick(function(e)
 	{
 		var offset = $("#main_image").offset();
