@@ -113,7 +113,6 @@ JS;
 	 */
 	public function generateNotes(Page $page, User $user, $notes, $image_id, $editable)
 	{
-		echo "editable: " . $editable;
 		$permission = $this->userPermission($user);
 		
 		$add_link = make_link("note_add");
