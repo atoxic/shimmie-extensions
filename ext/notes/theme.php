@@ -6,14 +6,14 @@ class NotesTheme extends Themelet
 {
 	public function displayNoteHistory(Page $page, User $user, $notes, $image_id)
 	{
-		$page->add_block(new Block("Note History", $this->generateCommon($page, $user, $notes, $image_id) . 
+		$page->add_block(new Block("Note History", $this->generateCommon($page, $user, $notes, $image_id, $editable) . 
 													$this->generateAdvanced($page, $user, $notes, $image_id)));
 	}
-	public function displayNotes(Page $page, User $user, $notes, $image_id, $shortcuts = true)
+	public function displayNotes(Page $page, User $user, $notes, $image_id, $editable)
 	{
-		$main_block = $this->generateCommon($page, $user, $notes, $image_id, $shortcuts). 
-						$this->generateNotes($page, $user, $notes, $image_id, $shortcuts);
-		if(!$user->is_anonymous() && $shortcuts)
+		$main_block = $this->generateCommon($page, $user, $notes, $image_id, $editable) . 
+						$this->generateNotes($page, $user, $notes, $image_id, $editable);
+		if(!$user->is_anonymous() && $editable)
 			$main_block .= $this->generateFloatingControls($page, $user, $notes, $image_id);
 		$page->add_block(new Block("", $main_block, "main"));
 	}
@@ -30,7 +30,7 @@ class NotesTheme extends Themelet
 	/*
 		Common JS code and CSS styles
 	*/
-	public function generateCommon(Page $page, User $user, $notes, $image_id, $shortcuts)
+	public function generateCommon(Page $page, User $user, $notes, $image_id, $editable)
 	{
 		$permission = $this->userPermission($user);
 		$data_href = get_base_href();
@@ -63,7 +63,7 @@ $.preLoadImages("$data_href/lib/ext_notes/images/accept.png",
 // ]]>
 </script>
 JS;
-		if($shortcuts)
+		if($editable)
 			$string .= <<<JS
 <script type="text/javascript">
 // <![CDATA[
@@ -111,13 +111,16 @@ JS;
 	/*
 		Normal view with photo notes
 	 */
-	public function generateNotes(Page $page, User $user, $notes, $image_id, $shortcuts)
+	public function generateNotes(Page $page, User $user, $notes, $image_id, $editable)
 	{
+		echo "editable: " . $editable;
 		$permission = $this->userPermission($user);
 		
 		$add_link = make_link("note_add");
 		$change_link = make_link("note_change");
 		$remove_link = make_link("note_remove");
+		
+		$editable = (isset($editable) && $editable) ? "true" : "false";
 		
 		$string = <<<JS
 <script type="text/javascript">
@@ -130,7 +133,7 @@ $(window).load(function()
 			saveUrl: "$change_link",
 			deleteUrl: "$remove_link",
 			permission: $permission,
-			editable: true,
+			editable: $editable,
 			useAjax: true,
 			redirect: $("#main_image"),
 			notes: [
@@ -158,15 +161,19 @@ JS;
 			]
 		});
 	$("#Imagemain").data("annotations", annotations);
+});
 // ]]>
 </script>
 
 JS;
-		if($shortcuts)
+		if($editable)
 			$string .= <<<JS
 			
 <script type="text/javascript">
 // <![CDATA[
+
+$(window).load(function()
+{
 	$("#main_image").dblclick(function(e)
 	{
 		var offset = $("#main_image").offset();

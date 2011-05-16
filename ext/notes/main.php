@@ -238,7 +238,7 @@ class Notes extends SimpleExtension
 			{
 				$id = int_escape($event->get_arg(1));
 				$notes = $this->getNotes($id);
-				$this->theme->displayNotes($page, $user, $notes, $id);
+				$this->theme->displayNotes($page, $user, $notes, $id, true);
 			}
 		}
 		else if($event->page_matches("note_history"))
