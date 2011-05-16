@@ -220,7 +220,7 @@ HTML
 <!-- For common functions -->
 <script type="text/javascript" src="$data_href/lib/ext_slext/ext_slext.js"> </script>
 
-<div><a href="$link" class="reader_link">See reader</a></div>
+<div><a href="$link" class="reader_link">See reader</a></div><hr/>
 HTML;
 		$prev_chap = null;
 		$cur_chap = null;
