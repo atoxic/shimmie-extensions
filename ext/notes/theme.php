@@ -94,7 +94,7 @@ JS;
 	public function generateFloatingControls(Page $page, User $user, $notes, $image_id)
 	{
 		$string = <<<JS
-<div style="position: fixed; left: 0px; bottom: 0px; padding: 10px; border: 1px solid; background: white;">
+<div class="note_controls" style="position: fixed; left: 0px; bottom: 0px; padding: 10px; border: 1px solid; background: white;">
 JS
 . $this->generateControls($page, $user, $notes, $image_id) . <<<JS
 </div> 

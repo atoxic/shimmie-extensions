@@ -45,3 +45,8 @@
 {
 	width: 50px !important;
 }
+
+.note_controls
+{
+	z-index: 100;
+}

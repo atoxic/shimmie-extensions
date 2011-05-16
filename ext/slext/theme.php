@@ -100,12 +100,23 @@ CSS;
 		{
 			$row = current($pages);
 		}
+		$image_id = $row["image_id"];
+		$image_link = make_link("image/$image_id");
+		$view_link = make_link("post/view/$image_id");
+		$name = $row["page"];
+		$esc_name = html_escape($name);
+		$stage = SLExtTheme::$stages_html[SLExt::$stages[$row["stage"]]];
 		
-		$main_link = make_link("stage_progress");
-		$nav_bar = "<div class='reader_nav_bar'><a href='$main_link' class='main_page'>Main Page</a>";
+		$main_link = html_escape(make_link("stage_progress"));
+		$nav_bar = <<<HTML
+<span class="stage_span">Stage: $stage</span>
+<div class='reader_nav_bar'>
+	<a href='$main_link' class='main_page'>Go to Main Page</a>
+	<a href='$view_link' class='view_page'>Go to Image</a>
+HTML;
 		if($prev = prev($pages))
 		{
-			$prev_link = make_link("manga_reader/" . $prev["page"]);
+			$prev_link = html_escape(make_link("manga_reader/" . $prev["page"]));
 			$nav_bar .= "<a href='$prev_link' class='prev_page'>&lt;&lt;Previous&lt;&lt;</a>";
 			next($pages);
 		}
@@ -115,21 +126,16 @@ CSS;
 			reset($pages);
 		}
 		if($next = next($pages))
-			$next_link = make_link("manga_reader/" . $next["page"]);
+			$next_link = html_escape(make_link("manga_reader/" . $next["page"]));
 		else
 			$next_link = $main_link;
 		$nav_bar .= "<a href='$next_link' class='next_page'>&gt;&gt;Next&gt;&gt;</a></span></div>";
 		
-		$image_id = $row["image_id"];
-		$link = make_link("image/$image_id");
-		$name = $row["page"];
-		$esc_name = html_escape($name);
-		$stage = SLExtTheme::$stages_raw[SLExt::$stages[$row["stage"]]];
 		$string .= <<<HTML
 $nav_bar
 <div id='Imagemain_container'>
 	<div id='Imagemain'>
-		<a href='$next_link'><img id='main_image' src='$link' /></a>
+		<a href="$next_link"><img id='main_image' src='$image_link' /></a>
 	</div>
 	<form action=''>Go to page:&nbsp;<select id='page_select' name='page_select'>
 HTML;
@@ -147,17 +153,21 @@ HTML;
 	</select></form>
 	<script>
 	// <![CDATA[
+	$(window).load(function()
+	{
 		$("#page_select").change(function(e)
 		{
 			window.location.replace("?q=/manga_reader/" + $(this).attr("value"));
 		});
+	});
+		
 	// ]]>
 	</script>
 </div>
 HTML;
 		
 		$page->set_title("Page: $esc_name");
-		$page->add_block(new Block("Page: $esc_name; Stage: " . $stage, $string));
+		$page->add_block(new Block("Page: $esc_name", $string));
 		
 		if(class_exists("NoteDisplayEvent"))
 		{
@@ -204,9 +214,13 @@ HTML
 		
 		$data_href = get_base_href();
 		
+		$link = make_link("manga_reader");
+		
 		$string = <<<HTML
 <!-- For common functions -->
 <script type="text/javascript" src="$data_href/lib/ext_slext/ext_slext.js"> </script>
+
+<div><a href="$link" class="reader_link">See reader</a></div>
 HTML;
 		$prev_chap = null;
 		$cur_chap = null;

@@ -423,7 +423,7 @@ class SLExt extends SimpleExtension
 			$arg = $event->get_arg(0);
 			if($event->count_args() == 0 || empty($arg))
 			{
-				$result = $database->get_all("SELECT * FROM " . $this->db . " GROUP BY page ORDER BY stage DESC, image_id");
+				$result = $database->get_all("SELECT * FROM " . $this->db . " GROUP BY page ORDER BY stage DESC, page");
 				$this->theme->displayReaderPage($page, $result, null);
 			}
 			else
@@ -434,7 +434,7 @@ class SLExt extends SimpleExtension
 				{
 					$this->theme->displayPageNotFound($page, $arg);
 				}
-				$result = $database->get_all("SELECT * FROM " . $this->db . " GROUP BY page ORDER BY stage DESC, image_id");
+				$result = $database->get_all("SELECT * FROM " . $this->db . " GROUP BY page ORDER BY stage DESC, page");
 				$this->theme->displayReaderPage($page, $result, $arg);
 			}
 		}

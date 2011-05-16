@@ -1,6 +1,7 @@
 div.reader_nav_bar
 {
 	text-align: center;
+	margin-right: 20px;
 }
 div.reader_nav_bar a,
 div.reader_nav_bar span
@@ -19,13 +20,20 @@ div.reader_nav_bar span
 {
 	float: right;
 }
-.main_page
+.main_page, .view_page
 {
-	margin: 0px auto;
+	margin: 0px 10px;
+	padding: 0px 20px;
 }
 select#page_select
 {
 	width: 300px;
+}
+
+a.reader_link
+{
+	font-size: 18px;
+	font-weight: bold;
 }
 
 table.stage_table
