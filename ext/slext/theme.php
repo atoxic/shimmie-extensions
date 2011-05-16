@@ -70,7 +70,6 @@ class SLExtTheme extends Themelet
 	public function displayReaderPage(Page $page, $pages, $name)
 	{
 		$this->common($page);
-		$esc_name = html_escape($name);
 		
 		$string = <<<CSS
 <style>
@@ -80,7 +79,7 @@ div#body
 }
 #Imagemain
 {
-	margin: 20px;
+	margin: 20px auto;
 }
 #Imagemain_container
 {
@@ -93,7 +92,14 @@ div#body
 CSS;
 		
 		reset($pages);
-		while(($row = current($pages)) && ($row["page"] != $name)) next($pages);
+		if(isset($name))
+		{
+			while(($row = current($pages)) && ($row["page"] != $name)) next($pages);
+		}
+		else
+		{
+			$row = current($pages);
+		}
 		
 		$main_link = make_link("stage_progress");
 		$nav_bar = "<div class='reader_nav_bar'><a href='$main_link' class='main_page'>Main Page</a>";
@@ -101,26 +107,30 @@ CSS;
 		{
 			$prev_link = make_link("manga_reader/" . $prev["page"]);
 			$nav_bar .= "<a href='$prev_link' class='prev_page'>&lt;&lt;Previous&lt;&lt;</a>";
-		}
-		next($pages);
-		if($next = next($pages))
-		{
-			$next_link = make_link("manga_reader/" . $next["page"]);
-			$nav_bar .= "<a href='$next_link' class='next_page'>&gt;&gt;Next&gt;&gt;</a>";
+			next($pages);
 		}
 		else
 		{
-			$next_link = $main_link;
+			$nav_bar .= "<span class='prev_page'>&lt;&lt;Previous&lt;&lt;</span>";
+			reset($pages);
 		}
-		$nav_bar .= "</span></div>";
+		if($next = next($pages))
+			$next_link = make_link("manga_reader/" . $next["page"]);
+		else
+			$next_link = $main_link;
+		$nav_bar .= "<a href='$next_link' class='next_page'>&gt;&gt;Next&gt;&gt;</a></span></div>";
 		
 		$image_id = $row["image_id"];
 		$link = make_link("image/$image_id");
+		$name = $row["page"];
+		$esc_name = html_escape($name);
 		$stage = SLExtTheme::$stages_raw[SLExt::$stages[$row["stage"]]];
 		$string .= <<<HTML
+$nav_bar
 <div id='Imagemain_container'>
-	$nav_bar
-	<div id='Imagemain'><a href='$next_link'><img id='main_image' src='$link' /></a></div>
+	<div id='Imagemain'>
+		<a href='$next_link'><img id='main_image' src='$link' /></a>
+	</div>
 	<form action=''>Go to page:&nbsp;<select id='page_select' name='page_select'>
 HTML;
 		reset($pages);

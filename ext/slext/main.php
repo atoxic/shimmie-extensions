@@ -419,15 +419,24 @@ class SLExt extends SimpleExtension
 		}
 		else if($event->page_matches("manga_reader"))
 		{
-			// since ordering the page takes some computational power, check that the page exists first
 			global $database;
-			$result = $database->get_row("SELECT * FROM " . $this->db . " WHERE page=? LIMIT 1", array($event->get_arg(0)));
-			if(!isset($result))
+			$arg = $event->get_arg(0);
+			if($event->count_args() == 0 || empty($arg))
 			{
-				$this->theme->displayPageNotFound($page, $event->get_arg(0));
+				$result = $database->get_all("SELECT * FROM " . $this->db . " GROUP BY page ORDER BY stage DESC, image_id");
+				$this->theme->displayReaderPage($page, $result, null);
 			}
-			$result = $database->get_all("SELECT * FROM " . $this->db . " GROUP BY page ORDER BY stage DESC, image_id");
-			$this->theme->displayReaderPage($page, $result, $event->get_arg(0));
+			else
+			{
+				// since ordering the page takes some computational power, check that the page exists first	
+				$result = $database->get_row("SELECT * FROM " . $this->db . " WHERE page=? LIMIT 1", array($event->get_arg(0)));
+				if(!isset($result))
+				{
+					$this->theme->displayPageNotFound($page, $arg);
+				}
+				$result = $database->get_all("SELECT * FROM " . $this->db . " GROUP BY page ORDER BY stage DESC, image_id");
+				$this->theme->displayReaderPage($page, $result, $arg);
+			}
 		}
 	}
 	

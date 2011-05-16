@@ -1,19 +1,27 @@
-div.reader_nav_bar a
+div.reader_nav_bar
+{
+	text-align: center;
+}
+div.reader_nav_bar a,
+div.reader_nav_bar span
 {
 	min-width: 200px;
-	width: 200px;
 	background: #FFFFEE;
 	border: 1px solid black;
 	font-size: 14px;
 	font-weight: bold;
 }
-a.prev_page
+.prev_page
 {
 	float: left;
 }
-a.next_page
+.next_page
 {
 	float: right;
+}
+.main_page
+{
+	margin: 0px auto;
 }
 select#page_select
 {
