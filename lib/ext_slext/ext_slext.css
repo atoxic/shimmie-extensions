@@ -1,6 +1,7 @@
 div.reader_nav_bar
 {
 	text-align: center;
+	margin-top: 20px;
 	margin-right: 20px;
 }
 div.reader_nav_bar a,
@@ -28,6 +29,11 @@ div.reader_nav_bar span
 select#page_select
 {
 	width: 300px;
+}
+.stage_span
+{
+	font-size: 14px;
+	font-weight: bold;
 }
 
 a.reader_link
