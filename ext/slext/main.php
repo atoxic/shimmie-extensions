@@ -162,7 +162,7 @@ class SLExt extends SimpleExtension
 	 * "pools" => array of pool title to id
 	 * "pages" => array of page to (array of stage to (array of image_id))
 	 */
-	public function getProgressCache()
+	public function getProgressCache($include_pools = true)
 	{
 		global $database;
 		$table = $database->get_all("SELECT * FROM " . $this->db . " ORDER BY page, stage, image_id");
@@ -195,23 +195,69 @@ class SLExt extends SimpleExtension
 		$page_array["th_id"] = $prev_id;
 		$pages[$prev_page] = $page_array;
 		
-		// ===================
-		// get pools
-		// ===================
-		$pools_db = $database->get_all("SELECT id, title FROM pools");
-		$pools = array();
-		foreach($pools_db as $pool)
+		if($include_pools)
 		{
-			$pools[$pool["title"]] = $pool["id"];
+			// ===================
+			// get pools
+			// ===================
+			$pools_db = $database->get_all("SELECT id, title FROM pools");
+			$pools = array();
+			foreach($pools_db as $pool)
+			{
+				$pools[$pool["title"]] = $pool["id"];
+			}
+			// ===================
+			// finish up
+			// ===================
+			$cache = array();
+			$cache["pages"] = $pages;
+			$cache["pools"] = $pools;
+			return($cache);
 		}
+		return($pages);
+	}
+	
+	/*
+		Either packs the latest stages of each page into a zip file named "stage_dl.zip",
+		or copies them into a directory called "stage_dl".  Both appears at the root of the shimmie directory
+	 */
+	public function stageDL()
+	{
+		global $database;
+			
+		$pages = $database->get_all("SELECT * FROM " . $this->db . " GROUP BY page ORDER BY stage DESC, image_id");
 		
-		// ===================
-		// finish up
-		// ===================
-		$cache = array();
-		$cache["pages"] = $pages;
-		$cache["pools"] = $pools;
-		return($cache);
+		if(phpversion('phar'))
+		{
+			$phar_fn = 'stage_dl';
+			unlink($phar_fn);
+			unlink($phar_fn . ".zip");
+			$p = new Phar($phar_fn, 0, $phar_fn);
+			$p = $p->convertToExecutable(Phar::ZIP);
+			$p->startBuffering();
+			foreach($pages as $page_rec)
+			{
+				$img = Image::by_id($page_rec["image_id"]);
+				$filename = $page_rec["page"] . "." . $img->get_ext();
+				$p[$filename] = file_get_contents($img->get_image_filename());
+				$p[$filename]->setMetaData(array('mime-type' => $img->get_mime_type()));
+			}
+			$p->stopBuffering();
+		}
+		else
+		{
+			$dir = 'stage_dl';
+			if(file_exists($dir) && !is_dir($dir))
+				unlink($dir);
+			if(!is_dir($dir) && !mkdir($dir))
+				$this->theme->displayStageDLError($page);
+			foreach($pages as $page_rec)
+			{
+				$img = Image::by_id($page_rec["image_id"]);
+				$filename = $dir . "/" . $page_rec["page"] . "." . $img->get_ext();
+				copy($img->get_image_filename(), $filename);
+			}
+		}
 	}
 	
 	/* ======================================================
@@ -289,42 +335,7 @@ class SLExt extends SimpleExtension
 				return;
 			}
 			
-			global $database;
-			
-			$pages = $database->get_all("SELECT * FROM " . $this->db . " GROUP BY page ORDER BY stage DESC, image_id");
-			
-			if(phpversion('phar'))
-			{
-				$phar_fn = 'stage_dl';
-				unlink($phar_fn);
-				unlink($phar_fn . ".zip");
-				$p = new Phar($phar_fn, 0, $phar_fn);
-				$p = $p->convertToExecutable(Phar::ZIP);
-				$p->startBuffering();
-				foreach($pages as $page_rec)
-				{
-					$img = Image::by_id($page_rec["image_id"]);
-					$filename = $page_rec["page"] . "." . $img->get_ext();
-					$p[$filename] = file_get_contents($img->get_image_filename());
-					$p[$filename]->setMetaData(array('mime-type' => $img->get_mime_type()));
-				}
-				$p->stopBuffering();
-			}
-			else
-			{
-				$dir = 'stage_dl';
-				if(file_exists($dir) && !is_dir($dir))
-					unlink($dir);
-				if(!is_dir($dir) && !mkdir($dir))
-					$this->theme->displayStageDLError($page);
-				foreach($pages as $page_rec)
-				{
-					$img = Image::by_id($page_rec["image_id"]);
-					$filename = $dir . "/" . $page_rec["page"] . "." . $img->get_ext();
-					copy($img->get_image_filename(), $filename);
-				}
-			}
-			
+			$this->stageDL();
 			$this->theme->displayStageDL($page);
 		}
 		else if($event->page_matches("stage_change"))
@@ -405,6 +416,18 @@ class SLExt extends SimpleExtension
 			{
 				$this->theme->displayStageUploadError($page);
 			}
+		}
+		else if($event->page_matches("manga_reader"))
+		{
+			// since ordering the page takes some computational power, check that the page exists first
+			global $database;
+			$result = $database->get_row("SELECT * FROM " . $this->db . " WHERE page=? LIMIT 1", array($event->get_arg(0)));
+			if(!isset($result))
+			{
+				$this->theme->displayPageNotFound($page, $event->get_arg(0));
+			}
+			$result = $database->get_all("SELECT * FROM " . $this->db . " GROUP BY page ORDER BY stage DESC, image_id");
+			$this->theme->displayReaderPage($page, $result, $event->get_arg(0));
 		}
 	}
 	

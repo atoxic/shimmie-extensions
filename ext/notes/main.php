@@ -10,6 +10,15 @@
  *    Make sure to include the 5 or so JS and CSS files in the lib folder.
  */
 
+class NoteDisplayEvent extends Event
+{
+	var $image_id;
+	function __construct($image_id)
+	{
+		$this->image_id = $image_id;
+	}
+}
+ 
 class Notes extends SimpleExtension
 {
 	/*
@@ -289,6 +298,12 @@ class Notes extends SimpleExtension
 			else
 				$page->set_data(-1);
 		}
+	}
+	
+	public function onNoteDisplay(NoteDisplayEvent $event)
+	{
+		global $page, $user;
+		$this->theme->displayNotes($page, $user, $this->getNotes($event->image_id), $event->image_id);
 	}
 }
 ?>

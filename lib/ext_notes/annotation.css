@@ -28,6 +28,7 @@
 }
 .image-annotate-canvas img {
 	position: absolute;
+	left: 0px;
 	z-index: 1;
 }
 .image-annotate-area {

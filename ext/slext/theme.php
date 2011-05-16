@@ -62,6 +62,99 @@ class SLExtTheme extends Themelet
 		$this->display_error($page, "Stage Change Error", "Error: Could not change stages");
 	}
 	
+	public function displayPageNotFound(Page $page, $name)
+	{
+		$this->display_error($page, "Page Not Found", "Error: Could not find the page specified");
+	}
+	
+	public function displayReaderPage(Page $page, $pages, $name)
+	{
+		$this->common($page);
+		$esc_name = html_escape($name);
+		
+		$string = <<<CSS
+<style>
+div#body
+{
+	margin-left: 20px;
+}
+#Imagemain
+{
+	margin: 20px;
+}
+#Imagemain_container
+{
+	text-align: center;
+	margin-left: 20px;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+</style>
+CSS;
+		
+		reset($pages);
+		while(($row = current($pages)) && ($row["page"] != $name)) next($pages);
+		
+		$main_link = make_link("stage_progress");
+		$nav_bar = "<div class='reader_nav_bar'><a href='$main_link' class='main_page'>Main Page</a>";
+		if($prev = prev($pages))
+		{
+			$prev_link = make_link("manga_reader/" . $prev["page"]);
+			$nav_bar .= "<a href='$prev_link' class='prev_page'>&lt;&lt;Previous&lt;&lt;</a>";
+		}
+		next($pages);
+		if($next = next($pages))
+		{
+			$next_link = make_link("manga_reader/" . $next["page"]);
+			$nav_bar .= "<a href='$next_link' class='next_page'>&gt;&gt;Next&gt;&gt;</a>";
+		}
+		else
+		{
+			$next_link = $main_link;
+		}
+		$nav_bar .= "</span></div>";
+		
+		$image_id = $row["image_id"];
+		$link = make_link("image/$image_id");
+		$stage = SLExtTheme::$stages_raw[SLExt::$stages[$row["stage"]]];
+		$string .= <<<HTML
+<div id='Imagemain_container'>
+	$nav_bar
+	<div id='Imagemain'><a href='$next_link'><img id='main_image' src='$link' /></a></div>
+	<form action=''>Go to page:&nbsp;<select id='page_select' name='page_select'>
+HTML;
+		reset($pages);
+		while($row = current($pages))
+		{
+			if($row["page"] == $name)
+				$selected = "selected='selected'";
+			else
+				$selected = "";
+			$string .= "<option value='$row[page]' $selected>$row[page]</option>";
+			next($pages);
+		}
+		$string .= <<<HTML
+	</select></form>
+	<script>
+	// <![CDATA[
+		$("#page_select").change(function(e)
+		{
+			window.location.replace("?q=/manga_reader/" + $(this).attr("value"));
+		});
+	// ]]>
+	</script>
+</div>
+HTML;
+		
+		$page->set_title("Page: $esc_name");
+		$page->add_block(new Block("Page: $esc_name; Stage: " . $stage, $string));
+		
+		if(class_exists("NoteDisplayEvent"))
+		{
+			send_event(new NoteDisplayEvent($image_id));
+		}
+	}
+	
 	private function cacheTableHeading($chap, $pools)
 	{
 		$pool_html = "";

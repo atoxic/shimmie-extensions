@@ -1,3 +1,25 @@
+div.reader_nav_bar a
+{
+	min-width: 200px;
+	width: 200px;
+	background: #FFFFEE;
+	border: 1px solid black;
+	font-size: 14px;
+	font-weight: bold;
+}
+a.prev_page
+{
+	float: left;
+}
+a.next_page
+{
+	float: right;
+}
+select#page_select
+{
+	width: 300px;
+}
+
 table.stage_table
 {
 	border: 1px solid;
