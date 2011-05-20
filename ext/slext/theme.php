@@ -17,7 +17,7 @@ class SLExtTheme extends Themelet
 	);
 	static $stages_ts = array
 	(
-		"stage_ts" 		=> "Typesetted",
+		"stage_ts" 		=> "Has Been Typeset",
 		"stage_alpha" 	=> "<span style='color: red;'>Alpha</span>",
 		"stage_beta" 	=> "<span style='color: blue;'>Beta</span>",
 		"stage_gold" 	=> "<span style='color: green;'>Gold</span>"

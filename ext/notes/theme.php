@@ -6,11 +6,13 @@ class NotesTheme extends Themelet
 {
 	public function displayNoteHistory(Page $page, User $user, $notes, $image_id)
 	{
-		$page->add_block(new Block("Note History", $this->generateCommon($page, $user, $notes, $image_id, $editable) . 
+		$page->add_block(new Block("Note History", $this->generateCommon($page, $user, $notes, $image_id, false) . 
 													$this->generateAdvanced($page, $user, $notes, $image_id)));
 	}
 	public function displayNotes(Page $page, User $user, $notes, $image_id, $editable)
 	{
+		if(!isset($editable))
+			$editable = false;
 		$main_block = $this->generateCommon($page, $user, $notes, $image_id, $editable) . 
 						$this->generateNotes($page, $user, $notes, $image_id, $editable);
 		if(!$user->is_anonymous() && $editable)
